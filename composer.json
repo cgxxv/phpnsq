@@ -1,0 +1,30 @@
+{
+    "name": "okstuff/phpnsq",
+    "description": "PHP Client for nsq",
+    "type": "library",
+    "keywords": ["nsq", "queue"],
+    "homepage": "http://github.com/okstuff/phpnsq",
+    "require": {
+        "monolog/monolog": "1.23.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "OkStuff\\PHPNSQ\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OkStuff\\PHPNSQ\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "stackerzzq",
+            "email": "foo_stacker@yeah.net"
+        }
+    ],
+    "license": "MIT"
+}

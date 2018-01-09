@@ -1,0 +1,11 @@
+language: php
+
+php:
+  - 7.*
+  - nightly
+
+install:
+  - composer install
+
+script:
+  - phpunit -v --coverage-clover ./coverage.xml
