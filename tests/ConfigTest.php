@@ -7,7 +7,7 @@ use OkStuff\PHPNSQ\Config;
 
 class ConfigTest extends TestCase
 {
-    public function testConfigInitial()
+    public function testInitialized()
     {
         $config = new Config();
         $this->assertTrue($config->initialized);
@@ -15,5 +15,11 @@ class ConfigTest extends TestCase
         // foreach ($config as $key => $value) {
         //     var_dump($key, $value);
         // }
+    }
+
+    public function testValidation()
+    {
+        $config = new Config();
+        $this->assertTrue($config->validate());
     }
 }

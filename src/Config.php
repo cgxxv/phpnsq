@@ -119,12 +119,10 @@ class Config
         $this->initialized = true;
     }
 
-    public function set($key, $val)
+    public function set($key, $val): bool
     {
-        if (isset($this->$key))
-        {
-            if (is_array($this->$key))
-            {
+        if (isset($this->$key)) {
+            if (is_array($this->$key)) {
                 $this->$key['default'] = $val;                
             } else {
                 $this->$key = $val;
@@ -137,27 +135,24 @@ class Config
     }
 
     //check if all the value is between min and max value.
-    public function validate()
+    public function validate(): bool
     {
-        foreach ($this as $key => $val)
-        {
-            if (is_array($val) && count($val) == 3)
-            {
-                if (!isset($val['default']) || !isset($val['min']) || !isset($val['max']))
-                {
+        foreach ($this as $key => $val) {
+            if (is_array($val) && count($val) == 3) {
+                if (!isset($val['default']) || !isset($val['min']) || !isset($val['max'])) {
                     throw new Exception(sprintf("invalid %s value", $key));
                 }
 
-                if ($val['default'] < $val['min'])
-                {
+                if ($val['default'] < $val['min']) {
                     throw new Exception(sprintf("invalid %s ! %v < %v", $key, $val['default'], $val['min']));
                 }
 
-                if ($val['default'] > $val['max'])
-                {
+                if ($val['default'] > $val['max']) {
                     throw new Exception(sprintf("invalid %s ! %v > %v", $key, $val['default'], $val['min']));
                 }
             }
         }
+
+        return true;
     }
 }
