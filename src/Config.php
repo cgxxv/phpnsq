@@ -81,7 +81,6 @@ class Config
     public $userAgent;
 
     public $heartbeatInterval = 30;
-    //TODO:
     public $sampleRate = [
         'min' => 0,
         'max' => 99,
@@ -107,7 +106,6 @@ class Config
         'default' => 1,
         'min' => 0,
     ];
-    //TODO:
     public $msgTimeout = [
         'min' => 0,
     ];
@@ -119,7 +117,7 @@ class Config
         $this->initialized = true;
     }
 
-    public function set($key, $val): bool
+    public function set(string $key, $val)
     {
         if (isset($this->$key)) {
             if (is_array($this->$key)) {
@@ -135,7 +133,7 @@ class Config
     }
 
     //check if all the value is between min and max value.
-    public function validate(): bool
+    public function validate()
     {
         foreach ($this as $key => $val) {
             if (is_array($val) && count($val) == 3) {
@@ -144,11 +142,11 @@ class Config
                 }
 
                 if ($val['default'] < $val['min']) {
-                    throw new Exception(sprintf("invalid %s ! %v < %v", $key, $val['default'], $val['min']));
+                    throw new Exception(sprintf("invalid %s ! %v(default) < %v(min)", $key, $val['default'], $val['min']));
                 }
 
                 if ($val['default'] > $val['max']) {
-                    throw new Exception(sprintf("invalid %s ! %v > %v", $key, $val['default'], $val['min']));
+                    throw new Exception(sprintf("invalid %s ! %v(default) > %v(max)", $key, $val['default'], $val['max']));
                 }
             }
         }
