@@ -1,15 +1,15 @@
 <?php
 
-namespace OkStuff\PHPNSQ\Tests;
+namespace OkStuff\PhpNsq\Tests;
 
+use OkStuff\PhpNsq\Tunnel\Config;
 use PHPUnit\Framework\TestCase;
-use OkStuff\PHPNSQ\Config;
 
 class ConfigTest extends TestCase
 {
     public function testInitialized()
     {
-        $config = new Config();
+        $config = new Config("127.0.0.1", 4150);
         $this->assertTrue($config->initialized);
 
         // foreach ($config as $key => $value) {
@@ -19,7 +19,7 @@ class ConfigTest extends TestCase
 
     public function testValidation()
     {
-        $config = new Config();
+        $config = new Config("127.0.0.1", 4150);
         $this->assertTrue($config->validate());
     }
 }

@@ -6,6 +6,9 @@ php:
 
 install:
   - composer install
+  - go install github.com/nsqio/nsq
+  - nsqlookupd
+  - nsqd
 
 script:
   - phpunit -v --coverage-clover ./coverage.xml

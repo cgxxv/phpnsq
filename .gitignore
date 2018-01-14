@@ -1,3 +1,6 @@
 /vendor/
-/log
+/tmp
 /composer.lock
+.idea
+.sonarlint
+phpnsq.iml

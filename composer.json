@@ -5,19 +5,24 @@
     "keywords": ["nsq", "queue"],
     "homepage": "http://github.com/okstuff/phpnsq",
     "require": {
-        "monolog/monolog": "1.23.*"
+        "monolog/monolog": "^1.23",
+        "symfony/console": "^4.0",
+        "symfony/process": "^4.0",
+        "symfony/phpunit-bridge": "^4.0",
+        "react/event-loop": "^0.4.3",
+        "symfony/serializer": "^4.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~6.0"
+        "phpunit/phpunit": "^6.5"
     },
     "autoload": {
         "psr-4": {
-            "OkStuff\\PHPNSQ\\": "src/"
+            "OkStuff\\PhpNsq\\": "src/phpnsq/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "OkStuff\\PHPNSQ\\Tests\\": "tests/"
+            "OkStuff\\PhpNsq\\Tests\\": "tests/"
         }
     },
     "authors": [

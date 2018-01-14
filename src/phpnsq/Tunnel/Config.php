@@ -1,123 +1,130 @@
 <?php
 
-namespace OkStuff\PHPNSQ;
+namespace OkStuff\PhpNsq\Tunnel;
+
+use Exception;
 
 class Config
 {
+    public $host;
+    public $port;
+
     public $initialized = false;
 
-    public $dialTimeout = 1;
-    public $readTimeout = [
+    private $dialTimeout = 1;
+    private $readTimeout = [
         'default' => 60,
         'min' => 0.1,
         'max' => 5*60,
     ];
-    public $writeTimeout = [
+    private $writeTimeout = [
         'default' => 1,
         'min' => 0.1,
         'max' => 5*60,
     ];
-    public $localAddr;
+    private $localAddr;
 
-    public $lookupdPollInterval = [
+    private $lookupdPollInterval = [
         'default' => 60,
         'min' => 0.01,
         'max' => 5*60,
     ];
-    public $lookupdPollJitter = [
+    private $lookupdPollJitter = [
         'default' => 0.3,
         'min' => 0,
         'max' => 1,
     ];
 
-    public $maxRequeueDelay = [
+    private $maxRequeueDelay = [
         'default' => 15*60,
         'min' => 0,
         'max' => 60*60,
     ];
-    public $defaultRequeueDelay = [
+    private $defaultRequeueDelay = [
         'default' => 90,
         'min' => 0,
         'max' => 60*60,
     ];
 
     //TODO: need to be fixed
-    public $backoffStrategy;
-    public $maxBackoffDuration = [
+    private $backoffStrategy;
+    private $maxBackoffDuration = [
         'default' => 2*60,
         'min' => 0,
         'max' => 60*60,
     ];
-    public $backoffMultiplier = [
+    private $backoffMultiplier = [
         'default' => 1,
         'min' => 0,
         'max' => 60*60,
     ];
 
-    public $maxAttempts = [
+    private $maxAttempts = [
         'default' => 5,
         'min' => 0,
         'max' => 65535,
     ];
     
-    public $lowRdyIdleTimeout = [
+    private $lowRdyIdleTimeout = [
         'default' => 10,
         'min' => 1,
         'max' => 5*60,
     ];
-    public $lowRdyTimeout = [
+    private $lowRdyTimeout = [
         'default' => 30,
         'min' => 1,
         'max' => 5*60,
     ];
-    public $rdyRedistributeInterval = [
+    private $rdyRedistributeInterval = [
         'default' => 5,
         'min' => 0.001,
         'max' => 5,
     ];
 
-    public $clientID;
-    public $hostname;
-    public $userAgent;
+    private $clientID;
+    private $hostname;
+    private $userAgent;
 
-    public $heartbeatInterval = 30;
-    public $sampleRate = [
+    private $heartbeatInterval = 30;
+    private $sampleRate = [
         'min' => 0,
         'max' => 99,
     ];
 
-    public $tlsV1 = true;
+    private $tlsV1 = true;
     //TODO:
-    public $tlsConfig;
+    private $tlsConfig;
 
     //TODO:
-    public $deflate = true;
-    public $deflateLevel = [
+    private $deflate = true;
+    private $deflateLevel = [
         'default' => 6,
         'min' => 1,
         'max' => 9,
     ];
-    public $snappy = true;
+    private $snappy = true;
 
-    public $outputBufferSize = 16384;
-    public $outputBufferTimeout = 0.25;
+    private $outputBufferSize = 16384;
+    private $outputBufferTimeout = 0.25;
 
-    public $maxInFlight = [
+    private $maxInFlight = [
         'default' => 1,
         'min' => 0,
     ];
-    public $msgTimeout = [
+    private $msgTimeout = [
         'min' => 0,
     ];
 
-    public $authSecret;
+    private $authSecret;
 
-    public function __construct()
+    public function __construct($host, $port)
     {
+        $this->host = $host;
+        $this->port = $port;
         $this->initialized = true;
     }
 
-    public function set(string $key, $val)
+    public function set($key, $val)
     {
         if (isset($this->$key)) {
             if (is_array($this->$key)) {
@@ -125,11 +132,14 @@ class Config
             } else {
                 $this->$key = $val;
             }
-
-            return true;
         }
 
-        return false;
+        return $this;
+    }
+
+    public function get($key)
+    {
+        return $this->$key;
     }
 
     //check if all the value is between min and max value.

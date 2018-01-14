@@ -1,6 +1,6 @@
 <?php
 
-namespace OkStuff\PHPNSQ\Internals;
+namespace OkStuff\PhpNsq\Internals;
 
 interface BackoffStrategy
 {
