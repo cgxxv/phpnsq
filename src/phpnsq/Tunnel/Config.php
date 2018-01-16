@@ -117,6 +117,8 @@ class Config
 
     private $authSecret;
 
+    private $blocking = true;
+
     public function __construct($host, $port)
     {
         $this->host = $host;

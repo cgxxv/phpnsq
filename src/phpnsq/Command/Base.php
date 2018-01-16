@@ -14,32 +14,34 @@ class Base extends Command
 {
     public $memoryLimit = 128;
     public $timeout = 120;
-    protected $loop;
 
     protected $outputHandler;
+    private static $loop;
 
     public function __construct($name = null)
     {
         parent::__construct($name);
 
-        $this->loop = Factory::create();
+        if (null === self::$loop) {
+            self::$loop = Factory::create();
+        }
     }
 
     public function runLoop()
     {
-        $this->loop->run();
+        self::$loop->run();
     }
 
     public function addReadStream($socket, Closure $closure)
     {
-        $this->loop->addReadStream($socket, $closure);
+        self::$loop->addReadStream($socket, $closure);
 
         return $this;
     }
 
     public function addPeriodicTimer($interval, Closure $closure)
     {
-        $this->loop->addPeriodicTimer($interval, $closure);
+        self::$loop->addPeriodicTimer($interval, $closure);
 
         return $this;
     }

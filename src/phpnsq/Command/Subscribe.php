@@ -25,23 +25,21 @@ class Subscribe extends Base
     {
         $config = require_once __DIR__.'/../../config/phpnsq.php';
         $phpnsq = new PhpNsq($config);
-        $self = $this;
         $phpnsq->setTopic($input->getArgument("topic"))
             ->setChannel($input->getArgument("channel"))
-            ->subscribe($self, function(Message $message) use ($output) {
-                $output->writeln("test........");
+            ->subscribe($this, function(Message $message) use ($output) {
                 $output->writeln("READ\t" . $message->getId() . "\t" . $message->getBody());
             });
-        $this->addPeriodicTimer(1, function () use ($output) {
+        $this->addPeriodicTimer(5, function () use ($output) {
             $memory = memory_get_usage() / 1024;
             $formatted = number_format($memory, 3).'K';
-            $output->writeln("############ Current memory usage: {$formatted} ############");
-        })->runLoop();
+            dump("############ Current memory usage: {$formatted} ############");
+        });
+        $this->runLoop();
 
 //        $this->setOutputHandler(function ($type, $line) use ($output) {
-//                $output->writeln($line);
-//            })
-//            ->listen(
+//            $output->writeln($line);
+//        })->listen(
 //                $input->getArgument("topic"),
 //                $input->getArgument("channel")
 //            );

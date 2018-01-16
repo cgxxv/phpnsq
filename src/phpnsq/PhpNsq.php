@@ -74,8 +74,9 @@ class PhpNsq
     public function subscribe(SubscribeCommand $cmd, Closure $callback)
     {
         $tunnel = $this->getOneNsqd();
+        $sock = $tunnel->getSock();
 
-        $cmd->addReadStream($tunnel->socket, function ($socket) use ($tunnel, $callback) {
+        $cmd->addReadStream($sock, function ($sock) use ($tunnel, $callback) {
             $this->handleMessage($tunnel, $callback);
         });
 
@@ -85,24 +86,25 @@ class PhpNsq
 
     public function handleMessage(Tunnel $tunnel, $callback)
     {
-        $reader = $this->reader->bindTunnel($tunnel);
-
+        $reader = $this->reader->bindTunnel($tunnel)->bindFrame();
         if ($reader->isHeartbeat()) {
             $tunnel->write($this->writer->nop());
         } elseif ($reader->isMessage()) {
-            $message = $reader->getMessage();
-
-            try {
-                call_user_func($callback, $message);
-            } catch (Exception $e) {
-                throw new Exception($e);
+            $msg = $reader->getMessage();
+            if (null === $msg) {
+                return;
             }
 
-            $tunnel->write($this->writer->fin($message->getId()));
-            $tunnel->write($this->writer->rdy(1));
+            try {
+                call_user_func($callback, $msg);
+            } catch (Exception $e) {
+                throw new Exception($e->getMessage());
+            }
 
+            $tunnel->write($this->writer->fin($msg->getId()));
+            $tunnel->write($this->writer->rdy(1));
         } elseif ($reader->isOk()) {
-            echo sprintf("Ignoring \"OK\" frame in SUB loop\n");
+            dump(sprintf('Ignoring "OK" frame in SUB loop'));
         } else {
             throw new Exception("Error/unexpected frame received: " . json_encode($reader));
         }

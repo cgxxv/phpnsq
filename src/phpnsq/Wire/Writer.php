@@ -2,8 +2,6 @@
 
 namespace OkStuff\PhpNsq\Wire;
 
-use OkStuff\PhpNsq\Message;
-
 class Writer
 {
     const MAGIC_V2 = "  V2";
