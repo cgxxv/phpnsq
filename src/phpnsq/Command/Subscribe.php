@@ -23,25 +23,18 @@ class Subscribe extends Base
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = require_once __DIR__.'/../../config/phpnsq.php';
+        $config = require_once __DIR__ . '/../../config/phpnsq.php';
         $phpnsq = new PhpNsq($config);
         $phpnsq->setTopic($input->getArgument("topic"))
             ->setChannel($input->getArgument("channel"))
-            ->subscribe($this, function(Message $message) use ($output) {
+            ->subscribe($this, function (Message $message) use ($output) {
                 $output->writeln("READ\t" . $message->getId() . "\t" . $message->getBody());
             });
         $this->addPeriodicTimer(5, function () use ($output) {
-            $memory = memory_get_usage() / 1024;
-            $formatted = number_format($memory, 3).'K';
+            $memory    = memory_get_usage() / 1024;
+            $formatted = number_format($memory, 3) . 'K';
             dump("############ Current memory usage: {$formatted} ############");
         });
         $this->runLoop();
-
-//        $this->setOutputHandler(function ($type, $line) use ($output) {
-//            $output->writeln($line);
-//        })->listen(
-//                $input->getArgument("topic"),
-//                $input->getArgument("channel")
-//            );
     }
 }

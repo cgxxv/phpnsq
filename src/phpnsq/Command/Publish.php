@@ -22,17 +22,17 @@ class Publish extends Base
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = require_once __DIR__.'/../../config/phpnsq.php';
-        $phpnsq = new PhpNsq($config);
+        $config  = require_once __DIR__ . '/../../config/phpnsq.php';
+        $phpnsq  = new PhpNsq($config);
         $message = new Message();
         $this->addPeriodicTimer(5, function () use ($phpnsq, $input, $message) {
-            $time = date("Y-m-d H:i:s");
+            $time  = date("Y-m-d H:i:s");
             $topic = $input->getArgument("topic");
             $message->setBody("Published `$time` to `$topic`");
             $phpnsq->setTopic($topic)->publish($message);
 
-            $memory = memory_get_usage() / 1024;
-            $formatted = number_format($memory, 3).'K';
+            $memory    = memory_get_usage() / 1024;
+            $formatted = number_format($memory, 3) . 'K';
             dump("############ Current memory usage: {$formatted} ############");
         });
         $this->runLoop();

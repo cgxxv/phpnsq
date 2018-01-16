@@ -19,8 +19,8 @@ class Tunnel
 
     public function read($len = 0)
     {
-        $data = '';
-        $timeout = $this->config->get("readTimeout")["default"];
+        $data         = '';
+        $timeout      = $this->config->get("readTimeout")["default"];
         $this->reader = [$sock = $this->getSock()];
         while (strlen($data) < $len) {
             $readable = $this->streamSelect($this->reader, $this->writer, $timeout);
@@ -35,14 +35,15 @@ class Tunnel
                 throw new Exception("Could not read {$len} bytes from {$this->config->host}:{$this->config->port}");
             }
             $data .= $buffer;
-            $len -= strlen($buffer);
+            $len  -= strlen($buffer);
         }
+
         return $data;
     }
 
     public function write($buffer)
     {
-        $timeout = $this->config->get("writeTimeout")["default"];
+        $timeout      = $this->config->get("writeTimeout")["default"];
         $this->writer = [$sock = $this->getSock()];
         while (strlen($buffer) > 0) {
             $writable = $this->streamSelect($this->reader, $this->writer, $timeout);

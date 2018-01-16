@@ -11,11 +11,11 @@ use RuntimeException;
 class Reader
 {
     const TYPE_RESPONSE = 0;
-    const TYPE_ERROR = 1;
-    const TYPE_MESSAGE = 2;
+    const TYPE_ERROR    = 1;
+    const TYPE_MESSAGE  = 2;
 
     const HEARTBEAT = "_heartbeat_";
-    const OK = "OK";
+    const OK        = "OK";
 
     private $tunnel;
     private $frame;

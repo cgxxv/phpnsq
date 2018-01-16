@@ -13,10 +13,10 @@ class Writer
 
     public function pub($topic, $data)
     {
-        $cmd = $this->command("PUB", $topic);
+        $cmd  = $this->command("PUB", $topic);
         $size = pack("N", strlen($data));
 
-        return $cmd.$size.$data;
+        return $cmd . $size . $data;
     }
 
     public function sub($topic, $channel)

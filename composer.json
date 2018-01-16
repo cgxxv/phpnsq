@@ -7,8 +7,6 @@
     "require": {
         "monolog/monolog": "^1.23",
         "symfony/console": "^4.0",
-        "symfony/process": "^4.0",
-        "symfony/phpunit-bridge": "^4.0",
         "react/event-loop": "^0.4.3",
         "symfony/serializer": "^4.0",
         "symfony/var-dumper": "^4.0"

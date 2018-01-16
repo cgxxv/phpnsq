@@ -74,7 +74,7 @@ class PhpNsq
     public function subscribe(SubscribeCommand $cmd, Closure $callback)
     {
         $tunnel = $this->getOneNsqd();
-        $sock = $tunnel->getSock();
+        $sock   = $tunnel->getSock();
 
         $cmd->addReadStream($sock, function ($sock) use ($tunnel, $callback) {
             $this->handleMessage($tunnel, $callback);
