@@ -6,7 +6,6 @@ use Exception;
 use OkStuff\PhpNsq\Message\Message;
 use OkStuff\PhpNsq\Tunnel\Tunnel;
 use OkStuff\PhpNsq\Utility\IntPacker;
-use RuntimeException;
 
 class Reader
 {
@@ -55,7 +54,7 @@ class Reader
                 $frame["error"] = $this->readString($size - 4);
             }
         } catch (Exception $e) {
-            throw new RuntimeException("Error reading frame details [$size, $type]");
+            throw new Exception("Error reading frame details [$size, $type] ({$e->getMessage()})");
         }
 
         $this->frame = $frame;

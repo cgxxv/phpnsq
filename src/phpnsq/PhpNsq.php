@@ -8,6 +8,7 @@ use OkStuff\PhpNsq\Command\Base as SubscribeCommand;
 use OkStuff\PhpNsq\Message\Message;
 use OkStuff\PhpNsq\Tunnel\Config;
 use OkStuff\PhpNsq\Tunnel\Tunnel;
+use OkStuff\PhpNsq\Utility\Logging;
 use OkStuff\PhpNsq\Wire\Reader;
 use OkStuff\PhpNsq\Wire\Writer;
 
@@ -16,6 +17,7 @@ class PhpNsq
     private $nsqdPool = [];
     private $writer;
     private $reader;
+    private $logger;
 
     private $channel;
     private $topic;
@@ -24,6 +26,7 @@ class PhpNsq
     {
         $this->writer = new Writer();
         $this->reader = new Reader();
+        $this->logger = new Logging("PHPNSQ", __DIR__."/../../tmp");
 
         foreach ($nsq["nsq"]["nsqd-addrs"] as $value) {
             $addr = explode(":", $value);
@@ -31,6 +34,11 @@ class PhpNsq
                 new Config($addr[0], $addr[1])
             ));
         }
+    }
+
+    public function getLogger()
+    {
+        return $this->logger;
     }
 
     public function getAllNsqds()
@@ -42,7 +50,7 @@ class PhpNsq
     {
         $pool = $this->nsqdPool;
         if (count($pool) <= 0) {
-            throw new Exception("empty nsqd pool");
+            $this->logger->error("empty nsqd pool");
         }
 
         return $pool[array_rand($pool)];
@@ -64,29 +72,36 @@ class PhpNsq
 
     public function publish(Message $message)
     {
-        $this->getOneNsqd()->write(
-            $this->writer->pub($this->topic, json_encode($message->getBody()))
-        );
-
-        return $this;
+        try {
+            $this->getOneNsqd()->write(
+                $this->writer->pub($this->topic, json_encode($message->getBody()))
+            );
+        } catch (Exception $e) {
+            $this->logger->error("publish error", $e);
+        }
     }
 
     public function subscribe(SubscribeCommand $cmd, Closure $callback)
     {
-        $tunnel = $this->getOneNsqd();
-        $sock   = $tunnel->getSock();
+        try {
+            $tunnel = $this->getOneNsqd();
+            $sock   = $tunnel->getSock();
 
-        $cmd->addReadStream($sock, function ($sock) use ($tunnel, $callback) {
-            $this->handleMessage($tunnel, $callback);
-        });
+            $cmd->addReadStream($sock, function ($sock) use ($tunnel, $callback) {
+                $this->handleMessage($tunnel, $callback);
+            });
 
-        $tunnel->write($this->writer->sub($this->topic, $this->channel))
-            ->write($this->writer->rdy(1));
+            $tunnel->write($this->writer->sub($this->topic, $this->channel))
+                ->write($this->writer->rdy(1));
+        } catch (Exception $e) {
+            $this->logger->error("subscribe error", $e);
+        }
     }
 
     public function handleMessage(Tunnel $tunnel, $callback)
     {
         $reader = $this->reader->bindTunnel($tunnel)->bindFrame();
+
         if ($reader->isHeartbeat()) {
             $tunnel->write($this->writer->nop());
         } elseif ($reader->isMessage()) {
@@ -98,15 +113,15 @@ class PhpNsq
             try {
                 call_user_func($callback, $msg);
             } catch (Exception $e) {
-                throw new Exception($e->getMessage());
+                $this->logger->error("call user func error", $e->getMessage());
             }
 
             $tunnel->write($this->writer->fin($msg->getId()));
             $tunnel->write($this->writer->rdy(1));
         } elseif ($reader->isOk()) {
-            dump(sprintf('Ignoring "OK" frame in SUB loop'));
+            $this->logger->info('Ignoring "OK" frame in SUB loop');
         } else {
-            throw new Exception("Error/unexpected frame received: " . json_encode($reader));
+            $this->logger->error("Error/unexpected frame received: ", $reader);
         }
     }
 }

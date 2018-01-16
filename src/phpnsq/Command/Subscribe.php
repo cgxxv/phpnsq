@@ -2,6 +2,7 @@
 
 namespace OkStuff\PhpNsq\Command;
 
+use Monolog\Formatter\HtmlFormatter;
 use OkStuff\PhpNsq\PhpNsq;
 use OkStuff\PhpNsq\Message\Message;
 use Symfony\Component\Console\Input\InputArgument;
@@ -27,13 +28,13 @@ class Subscribe extends Base
         $phpnsq = new PhpNsq($config);
         $phpnsq->setTopic($input->getArgument("topic"))
             ->setChannel($input->getArgument("channel"))
-            ->subscribe($this, function (Message $message) use ($output) {
-                $output->writeln("READ\t" . $message->getId() . "\t" . $message->getBody());
+            ->subscribe($this, function (Message $message) use ($phpnsq, $output) {
+                $phpnsq->getLogger()->info("READ", $message);
             });
         $this->addPeriodicTimer(5, function () use ($output) {
             $memory    = memory_get_usage() / 1024;
             $formatted = number_format($memory, 3) . 'K';
-            dump("############ Current memory usage: {$formatted} ############");
+            $output->writeln("############ Current memory usage: {$formatted} ############");
         });
         $this->runLoop();
     }
