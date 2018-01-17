@@ -14,5 +14,6 @@ return [
             "invite-friend",
             // "send-sms",
         ],
+        "logdir" => "/tmp",
     ],
 ];

@@ -3,7 +3,6 @@
 namespace OkStuff\PhpNsq\Command;
 
 use OkStuff\PhpNsq\Message\Message;
-use OkStuff\PhpNsq\PhpNsq;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

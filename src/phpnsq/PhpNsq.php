@@ -24,7 +24,7 @@ class PhpNsq
     public function __construct($nsq)
     {
         $this->reader = new reader();
-        $this->logger = new Logging("PHPNSQ", __DIR__ . "/../../tmp");
+        $this->logger = new Logging("PHPNSQ", $nsq["nsq"]["logdir"]);
 
         foreach ($nsq["nsq"]["nsqd-addrs"] as $value) {
             $addr = explode(":", $value);
@@ -78,11 +78,21 @@ class PhpNsq
         }
     }
 
-    public function multiPublish(...$bodies)
+    public function publishMulti(...$bodies)
     {
         try {
             $tunnel = $this->getOneNsqd();
             $tunnel->write(Writer::mpub($this->topic, $bodies));
+        } catch (Exception $e) {
+            $this->logger->error("publish error", $e);
+        }
+    }
+
+    public function publishDefer(Message $message, $deferTime)
+    {
+        try {
+            $tunnel = $this->getOneNsqd();
+            $tunnel->write(Writer::dpub($this->topic, $deferTime, json_encode($message->getBody())));
         } catch (Exception $e) {
             $this->logger->error("publish error", $e);
         }
@@ -118,10 +128,11 @@ class PhpNsq
             } catch (Exception $e) {
                 $this->logger->error("Will be requeued: ", $e->getMessage());
 
-                $tunnel->write(Writer::req(
-                    $msg->getId(),
-                    $tunnel->getConfig()->get("defaultRequeueDelay")["default"]
-                ));
+                $tunnel->write(Writer::touch($msg->getId()))
+                    ->write(Writer::req(
+                        $msg->getId(),
+                        $tunnel->getConfig()->get("defaultRequeueDelay")["default"]
+                    ));
             }
 
             $tunnel->write(Writer::fin($msg->getId()))

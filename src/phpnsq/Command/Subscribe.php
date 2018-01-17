@@ -2,8 +2,6 @@
 
 namespace OkStuff\PhpNsq\Command;
 
-use Monolog\Formatter\HtmlFormatter;
-use OkStuff\PhpNsq\PhpNsq;
 use OkStuff\PhpNsq\Message\Message;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

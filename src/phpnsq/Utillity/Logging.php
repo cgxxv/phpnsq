@@ -2,6 +2,7 @@
 
 namespace OkStuff\PhpNsq\Utility;
 
+use Exception;
 use Monolog\Formatter\HtmlFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -48,13 +49,17 @@ class Logging
 
     private function getLogFile()
     {
-        if (!file_exists($this->dirname)) {
-            mkdir($this->dirname, 0755);
-        }
+        $filename = $this->dirname . DIRECTORY_SEPARATOR . "phpnsq-" . date("Ymd") . ".log";
+        try {
+            if (!file_exists($this->dirname)) {
+                mkdir($this->dirname, 0755);
+            }
 
-        $filename = $this->dirname . DIRECTORY_SEPARATOR . date("Ymd") . ".log";
-        if (!file_exists($filename)) {
-            touch($filename);
+            if (!file_exists($filename)) {
+                touch($filename);
+            }
+        } catch (Exception $e) {
+            throw new Exception("Create `$filename` failed.");
         }
 
         return $filename;

@@ -33,6 +33,14 @@ class Writer
         return $cmd . $size . $num . $mb;
     }
 
+    public static function dpub($topic, $deferTime, $body)
+    {
+        $cmd = self::command("DPUB", $topic, $deferTime);
+        $size = IntPacker::uInt32(strlen($body), true);
+
+        return $cmd.$size.$body;
+    }
+
     public static function sub($topic, $channel)
     {
         return self::command("SUB", $topic, $channel);
@@ -56,6 +64,11 @@ class Writer
     public static function req($id, $timeout)
     {
         return self::command("REQ", $id, $timeout);
+    }
+
+    public static function touch($id)
+    {
+        return self::command("TOUCH", $id);
     }
 
     public static function identify()

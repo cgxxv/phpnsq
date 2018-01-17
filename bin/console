@@ -4,6 +4,7 @@
 
 require __DIR__.'/../vendor/autoload.php';
 
+use OkStuff\PhpNsq\Command\PublishDefer;
 use OkStuff\PhpNsq\Command\PublishMulti;
 use Symfony\Component\Console\Application;
 use OkStuff\PhpNsq\Command\Publish;
@@ -15,6 +16,7 @@ $config = require __DIR__.'/../src/config/phpnsq.php';
 
 $application->add(new Publish($config));
 $application->add(new PublishMulti($config));
+$application->add(new PublishDefer($config));
 $application->add(new Subscribe($config));
 
 $application->run();

@@ -10,4 +10,6 @@ nsq:
     # - sms-chan
   - topics:
     - invite-friend
-    # - send-sms
+    # - send-
+  - logdir:
+    - /tmp
