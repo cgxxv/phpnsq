@@ -39,8 +39,8 @@ class Stream
     public static function select(array &$read, array &$write, $timeout)
     {
         $streamPool = [
-            "read" => $read,
-            "write" => $write
+            "read"  => $read,
+            "write" => $write,
         ];
         if ($read || $write) {
             $except = null;
@@ -49,9 +49,9 @@ class Stream
             if ($available > 0) {
                 return $available;
             } else if ($available === 0) {
-                throw new Exception("stream_select() timeout : ".json_encode($streamPool)." after {$timeout} seconds");
+                throw new Exception("stream_select() timeout : " . json_encode($streamPool) . " after {$timeout} seconds");
             } else {
-                throw new Exception("stream_select() failed : ".json_encode($streamPool));
+                throw new Exception("stream_select() failed : " . json_encode($streamPool));
             }
         }
 

@@ -8,10 +8,12 @@ use OkStuff\PhpNsq\Wire\Writer;
 
 class Tunnel
 {
-    private $sock;
     private $config;
+    private $sock;
     private $writer = [];
     private $reader = [];
+
+    private $identify = false;
 
     public function __construct(Config $config)
     {
@@ -69,9 +71,18 @@ class Tunnel
             }
 
             $this->write(Writer::MAGIC_V2);
-//            $this->write(Writer::identify());
         }
 
         return $this->sock;
+    }
+
+    //TODO:
+    public function setIdentify()
+    {
+        if (false === $this->identify) {
+            $this->write(Writer::identify());
+        }
+
+        return $this;
     }
 }

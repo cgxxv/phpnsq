@@ -24,7 +24,7 @@ class PhpNsq
     public function __construct($nsq)
     {
         $this->reader = new reader();
-        $this->logger = new Logging("PHPNSQ", __DIR__."/../../tmp");
+        $this->logger = new Logging("PHPNSQ", __DIR__ . "/../../tmp");
 
         foreach ($nsq["nsq"]["nsqd-addrs"] as $value) {
             $addr = explode(":", $value);
@@ -71,9 +71,8 @@ class PhpNsq
     public function publish(Message $message)
     {
         try {
-            $this->getOneNsqd()->write(
-                Writer::pub($this->topic, json_encode($message->getBody()))
-            );
+            $tunnel = $this->getOneNsqd();
+            $tunnel->write(Writer::pub($this->topic, json_encode($message->getBody())));
         } catch (Exception $e) {
             $this->logger->error("publish error", $e);
         }
