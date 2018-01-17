@@ -78,6 +78,16 @@ class PhpNsq
         }
     }
 
+    public function multiPublish(...$bodies)
+    {
+        try {
+            $tunnel = $this->getOneNsqd();
+            $tunnel->write(Writer::mpub($this->topic, $bodies));
+        } catch (Exception $e) {
+            $this->logger->error("publish error", $e);
+        }
+    }
+
     public function subscribe(SubscribeCommand $cmd, Closure $callback)
     {
         try {

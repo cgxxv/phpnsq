@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Subscribe extends Base
 {
-    CONST COMMAND_NAME = 'phpnsq:subscribe';
+    CONST COMMAND_NAME = 'phpnsq:sub';
 
     public function configure()
     {
@@ -24,8 +24,7 @@ class Subscribe extends Base
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = require_once __DIR__ . '/../../config/phpnsq.php';
-        $phpnsq = new PhpNsq($config);
+        $phpnsq = self::$phpnsq;
         $phpnsq->setTopic($input->getArgument("topic"))
             ->setChannel($input->getArgument("channel"))
             ->subscribe($this, function (Message $message) use ($phpnsq, $output) {

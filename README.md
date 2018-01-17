@@ -5,6 +5,7 @@
 ### have a try
 ```shell
 composer install
-php bin/console phpnsq:subscribe <topic> <channel>
-php bin/console phpnsq:publish <topic>
+php bin/console phpnsq:sub <topic> <channel>
+php bin/console phpnsq:pub <topic>
+php bin/console phpnsq:mpub <topic>
 ```

@@ -3,20 +3,21 @@
 namespace OkStuff\PhpNsq\Command;
 
 use Closure;
+use OkStuff\PhpNsq\PhpNsq;
 use React\EventLoop\Factory;
 use Symfony\Component\Console\Command\Command;
 
 class Base extends Command
 {
-    private static $loop;
+    protected static $phpnsq;
+    private static   $loop;
 
-    public function __construct($name = null)
+    public function __construct(array $config = null, $name = null)
     {
         parent::__construct($name);
 
-        if (null === self::$loop) {
-            self::$loop = Factory::create();
-        }
+        self::$loop   = Factory::create();
+        self::$phpnsq = new PhpNsq($config);
     }
 
     public function runLoop()

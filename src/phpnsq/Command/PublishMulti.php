@@ -2,15 +2,14 @@
 
 namespace OkStuff\PhpNsq\Command;
 
-use OkStuff\PhpNsq\Message\Message;
 use OkStuff\PhpNsq\PhpNsq;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Publish extends Base
+class PublishMulti extends Base
 {
-    CONST COMMAND_NAME = "phpnsq:pub";
+    CONST COMMAND_NAME = "phpnsq:mpub";
 
     public function configure()
     {
@@ -22,13 +21,15 @@ class Publish extends Base
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $topic   = $input->getArgument("topic");
-        $phpnsq  = self::$phpnsq;
-        $message = new Message();
-        $this->addPeriodicTimer(5, function () use ($phpnsq, $topic, $message) {
-            $time = date("Y-m-d H:i:s");
-            $message->setBody("Published `$time` to `$topic`");
-            $phpnsq->setTopic($topic)->publish($message);
+        $topic  = $input->getArgument("topic");
+        $phpnsq = self::$phpnsq;
+        $this->addPeriodicTimer(5, function () use ($phpnsq, $topic) {
+            $time   = date("Y-m-d H:i:s");
+            $bodies = [];
+            for ($i = 0; $i < 10; $i++) {
+                $bodies[] = "Published `$time` to `$topic`" . (5 * ($i + 1)) . " <=> " . str_repeat("a", 5 * ($i + 1));
+            }
+            $phpnsq->setTopic($topic)->multiPublish(...$bodies);
 
             $memory    = memory_get_usage() / 1024;
             $formatted = number_format($memory, 3) . 'K';

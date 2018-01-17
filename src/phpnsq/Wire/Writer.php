@@ -2,6 +2,8 @@
 
 namespace OkStuff\PhpNsq\Wire;
 
+use OkStuff\PhpNsq\Utility\IntPacker;
+
 class Writer
 {
     const MAGIC_V2 = "  V2";
@@ -11,12 +13,24 @@ class Writer
         return self::MAGIC_V2;
     }
 
-    public static function pub($topic, $data)
+    public static function pub($topic, $body)
     {
         $cmd  = self::command("PUB", $topic);
-        $size = pack("N", strlen($data));
+        $size = IntPacker::uInt32(strlen($body), true);
 
-        return $cmd . $size . $data;
+        return $cmd . $size . $body;
+    }
+
+    public static function mpub($topic, array $bodies)
+    {
+        $cmd  = self::command("MPUB", $topic);
+        $num  = IntPacker::uInt32(count($bodies), true);
+        $mb   = implode(array_map(function ($body) {
+            return IntPacker::uint32(strlen($body), true) . $body;
+        }, $bodies));
+        $size = IntPacker::uInt32(strlen($num . $mb), true);
+
+        return $cmd . $size . $num . $mb;
     }
 
     public static function sub($topic, $channel)
