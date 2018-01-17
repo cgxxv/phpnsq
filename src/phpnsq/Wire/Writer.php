@@ -6,45 +6,50 @@ class Writer
 {
     const MAGIC_V2 = "  V2";
 
-    public function magic()
+    public static function magic()
     {
         return self::MAGIC_V2;
     }
 
-    public function pub($topic, $data)
+    public static function pub($topic, $data)
     {
-        $cmd  = $this->command("PUB", $topic);
+        $cmd  = self::command("PUB", $topic);
         $size = pack("N", strlen($data));
 
         return $cmd . $size . $data;
     }
 
-    public function sub($topic, $channel)
+    public static function sub($topic, $channel)
     {
-        return $this->command("SUB", $topic, $channel);
+        return self::command("SUB", $topic, $channel);
     }
 
-    public function rdy($count)
+    public static function rdy($count)
     {
-        return $this->command("RDY", $count);
+        return self::command("RDY", $count);
     }
 
-    public function nop()
+    public static function nop()
     {
-        return $this->command("NOP");
+        return self::command("NOP");
     }
 
-    public function fin($id)
+    public static function fin($id)
     {
-        return $this->command("FIN", $id);
+        return self::command("FIN", $id);
     }
 
-    public function req($id, $timeout)
+    public static function req($id, $timeout)
     {
-        return $this->command("REQ", $id, $timeout);
+        return self::command("REQ", $id, $timeout);
     }
 
-    private function command($action, ...$params)
+    public static function identify()
+    {
+        return self::command("IDENTIFY");
+    }
+
+    private static function command($action, ...$params)
     {
         return sprintf("%s %s%s", $action, implode(' ', $params), "\n");
     }

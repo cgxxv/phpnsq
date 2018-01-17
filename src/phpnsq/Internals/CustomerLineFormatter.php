@@ -8,12 +8,10 @@ class CustomerLineFormatter extends ColoredLineFormatter
 {
     private $coloredOrNot;
 
-    public function __construct($coloredOrNot = true, $allowInlineLineBreaks = false, $ignoreEmptyContextAndExtra = false)
+    public function __construct($ignoreEmptyContextAndExtra = false)
     {
-        $this->coloredOrNot               = $coloredOrNot;
-        $this->allowInlineLineBreaks      = $allowInlineLineBreaks;
         $this->ignoreEmptyContextAndExtra = $ignoreEmptyContextAndExtra;
-        parent::__construct(null, null, null, $allowInlineLineBreaks, $ignoreEmptyContextAndExtra);
+        parent::__construct(null, null, null, false, $ignoreEmptyContextAndExtra);
     }
 
     /**
@@ -40,7 +38,7 @@ class CustomerLineFormatter extends ColoredLineFormatter
             }
         }
 
-        $output = $this->coloredOrNot($vars, $output);
+        $output = $this->coloredOutput($vars);
 
         // remove leftover %extra.xxx% and %context.xxx% if any
         if (false !== strpos($output, '%')) {
@@ -51,18 +49,8 @@ class CustomerLineFormatter extends ColoredLineFormatter
         return $output;
     }
 
-    protected function coloredOrNot(&$vars, $output)
+    protected function coloredOutput(&$vars)
     {
-        if (!$this->coloredOrNot) {
-            foreach ($vars as $var => $val) {
-                if (false !== strpos($output, '%' . $var . '%')) {
-                    $output = str_replace('%' . $var . '%', $this->stringify($val), $output);
-                }
-            }
-
-            return $output;
-        }
-
         $coloredOutput = "[%datetime%] %channel%.%level_name%: ";
         foreach ($vars as $var => $val) {
             if (false !== strpos($coloredOutput, '%' . $var . '%')) {
@@ -92,8 +80,6 @@ class CustomerLineFormatter extends ColoredLineFormatter
             }
         }
 
-        $output = $coloredOutput . $normalOutput;
-
-        return $output;
+        return $coloredOutput . $normalOutput;
     }
 }

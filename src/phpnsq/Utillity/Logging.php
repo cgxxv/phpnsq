@@ -2,6 +2,7 @@
 
 namespace OkStuff\PhpNsq\Utility;
 
+use Monolog\Formatter\HtmlFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use OkStuff\PhpNsq\Internals\CustomerLineFormatter;
@@ -16,8 +17,8 @@ class Logging
         $this->handler = new Logger($name);
         $this->dirname = $dirname;
 
-        $this->handler->pushHandler((new StreamHandler($this->getLogFile()))->setFormatter(new CustomerLineFormatter(false, false, true)));
-        $this->handler->pushHandler((new StreamHandler("php://stdout"))->setFormatter(new CustomerLineFormatter(true, true, true)));
+        $this->handler->pushHandler((new StreamHandler($this->getLogFile()))->setFormatter(new HtmlFormatter()));
+        $this->handler->pushHandler((new StreamHandler("php://stdout"))->setFormatter(new CustomerLineFormatter(true)));
     }
 
     public function getHandler()

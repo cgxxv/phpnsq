@@ -15,17 +15,15 @@ use OkStuff\PhpNsq\Wire\Writer;
 class PhpNsq
 {
     private $nsqdPool = [];
-    private $writer;
-    private $reader;
     private $logger;
 
     private $channel;
     private $topic;
+    private $reader;
 
     public function __construct($nsq)
     {
-        $this->writer = new Writer();
-        $this->reader = new Reader();
+        $this->reader = new reader();
         $this->logger = new Logging("PHPNSQ", __DIR__."/../../tmp");
 
         foreach ($nsq["nsq"]["nsqd-addrs"] as $value) {
@@ -74,7 +72,7 @@ class PhpNsq
     {
         try {
             $this->getOneNsqd()->write(
-                $this->writer->pub($this->topic, json_encode($message->getBody()))
+                Writer::pub($this->topic, json_encode($message->getBody()))
             );
         } catch (Exception $e) {
             $this->logger->error("publish error", $e);
@@ -91,8 +89,7 @@ class PhpNsq
                 $this->handleMessage($tunnel, $callback);
             });
 
-            $tunnel->write($this->writer->sub($this->topic, $this->channel))
-                ->write($this->writer->rdy(1));
+            $tunnel->write(Writer::sub($this->topic, $this->channel))->write(Writer::rdy(1));
         } catch (Exception $e) {
             $this->logger->error("subscribe error", $e);
         }
@@ -103,21 +100,23 @@ class PhpNsq
         $reader = $this->reader->bindTunnel($tunnel)->bindFrame();
 
         if ($reader->isHeartbeat()) {
-            $tunnel->write($this->writer->nop());
+            $tunnel->write(Writer::nop());
         } elseif ($reader->isMessage()) {
             $msg = $reader->getMessage();
-            if (null === $msg) {
-                return;
-            }
 
             try {
                 call_user_func($callback, $msg);
             } catch (Exception $e) {
-                $this->logger->error("call user func error", $e->getMessage());
+                $this->logger->error("Will be requeued: ", $e->getMessage());
+
+                $tunnel->write(Writer::req(
+                    $msg->getId(),
+                    $tunnel->getConfig()->get("defaultRequeueDelay")["default"]
+                ));
             }
 
-            $tunnel->write($this->writer->fin($msg->getId()));
-            $tunnel->write($this->writer->rdy(1));
+            $tunnel->write(Writer::fin($msg->getId()))
+                ->write(Writer::rdy(1));
         } elseif ($reader->isOk()) {
             $this->logger->info('Ignoring "OK" frame in SUB loop');
         } else {
