@@ -6,7 +6,7 @@ use Closure;
 use Exception;
 use OkStuff\PhpNsq\Command\Base as SubscribeCommand;
 use OkStuff\PhpNsq\Message\Message;
-use OkStuff\PhpNsq\Tunnel\Config;
+use OkStuff\PhpNsq\Tunnel\Pool;
 use OkStuff\PhpNsq\Tunnel\Tunnel;
 use OkStuff\PhpNsq\Utility\Logging;
 use OkStuff\PhpNsq\Wire\Reader;
@@ -14,9 +14,8 @@ use OkStuff\PhpNsq\Wire\Writer;
 
 class PhpNsq
 {
-    private $nsqdPool = [];
+    private $pool;
     private $logger;
-
     private $channel;
     private $topic;
     private $reader;
@@ -25,33 +24,12 @@ class PhpNsq
     {
         $this->reader = new reader();
         $this->logger = new Logging("PHPNSQ", $nsq["nsq"]["logdir"]);
-
-        foreach ($nsq["nsq"]["nsqd-addrs"] as $value) {
-            $addr = explode(":", $value);
-            array_push($this->nsqdPool, new Tunnel(
-                new Config($addr[0], $addr[1])
-            ));
-        }
+        $this->pool   = new Pool($nsq);
     }
 
     public function getLogger()
     {
         return $this->logger;
-    }
-
-    public function getAllNsqds()
-    {
-        return $this->nsqdPool;
-    }
-
-    public function getOneNsqd()
-    {
-        $pool = $this->nsqdPool;
-        if (count($pool) <= 0) {
-            $this->logger->error("empty nsqd pool");
-        }
-
-        return $pool[array_rand($pool)];
     }
 
     public function setChannel($channel)
@@ -71,7 +49,7 @@ class PhpNsq
     public function publish(Message $message)
     {
         try {
-            $tunnel = $this->getOneNsqd();
+            $tunnel = $this->pool->getTunnel();
             $tunnel->write(Writer::pub($this->topic, json_encode($message->getBody())));
         } catch (Exception $e) {
             $this->logger->error("publish error", $e);
@@ -81,7 +59,7 @@ class PhpNsq
     public function publishMulti(...$bodies)
     {
         try {
-            $tunnel = $this->getOneNsqd();
+            $tunnel = $this->pool->getTunnel();
             $tunnel->write(Writer::mpub($this->topic, $bodies));
         } catch (Exception $e) {
             $this->logger->error("publish error", $e);
@@ -91,7 +69,7 @@ class PhpNsq
     public function publishDefer(Message $message, $deferTime)
     {
         try {
-            $tunnel = $this->getOneNsqd();
+            $tunnel = $this->pool->getTunnel();
             $tunnel->write(Writer::dpub($this->topic, $deferTime, json_encode($message->getBody())));
         } catch (Exception $e) {
             $this->logger->error("publish error", $e);
@@ -101,7 +79,7 @@ class PhpNsq
     public function subscribe(SubscribeCommand $cmd, Closure $callback)
     {
         try {
-            $tunnel = $this->getOneNsqd();
+            $tunnel = $this->pool->getTunnel();
             $sock   = $tunnel->getSock();
 
             $cmd->addReadStream($sock, function ($sock) use ($tunnel, $callback) {
@@ -121,8 +99,8 @@ class PhpNsq
         if ($reader->isHeartbeat()) {
             $tunnel->write(Writer::nop());
         } elseif ($reader->isMessage()) {
-            $msg = $reader->getMessage();
 
+            $msg = $reader->getMessage();
             try {
                 call_user_func($callback, $msg);
             } catch (Exception $e) {

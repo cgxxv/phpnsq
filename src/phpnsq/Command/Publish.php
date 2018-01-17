@@ -24,14 +24,14 @@ class Publish extends Base
         $topic   = $input->getArgument("topic");
         $phpnsq  = self::$phpnsq;
         $message = new Message();
-        $this->addPeriodicTimer(5, function () use ($phpnsq, $topic, $message) {
+        $this->addPeriodicTimer(5, function () use ($phpnsq, $topic, $message, $output) {
             $time = date("Y-m-d H:i:s");
             $message->setBody("Published `$time` to `$topic`");
             $phpnsq->setTopic($topic)->publish($message);
 
             $memory    = memory_get_usage() / 1024;
             $formatted = number_format($memory, 3) . 'K';
-            dump("############ Current memory usage: {$formatted} ############");
+            $output->writeln("############ Current memory usage: {$formatted} ############");
         });
         $this->runLoop();
     }

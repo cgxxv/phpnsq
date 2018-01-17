@@ -26,14 +26,14 @@ class PublishDefer extends Base
         $deferTime = $input->getArgument("defer_time");
         $phpnsq    = self::$phpnsq;
         $message   = new Message();
-        $this->addPeriodicTimer(5, function () use ($phpnsq, $topic, $deferTime, $message) {
+        $this->addPeriodicTimer(5, function () use ($phpnsq, $topic, $deferTime, $message, $output) {
             $time = date("Y-m-d H:i:s");
             $message->setBody("Published `$time` to `$topic`");
             $phpnsq->setTopic($topic)->publishDefer($message, $deferTime);
 
             $memory    = memory_get_usage() / 1024;
             $formatted = number_format($memory, 3) . 'K';
-            dump("############ Current memory usage: {$formatted} ############");
+            $output->writeln("############ Current memory usage: {$formatted} ############");
         });
         $this->runLoop();
     }

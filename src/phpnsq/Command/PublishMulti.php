@@ -22,7 +22,7 @@ class PublishMulti extends Base
     {
         $topic  = $input->getArgument("topic");
         $phpnsq = self::$phpnsq;
-        $this->addPeriodicTimer(5, function () use ($phpnsq, $topic) {
+        $this->addPeriodicTimer(5, function () use ($phpnsq, $topic, $output) {
             $time   = date("Y-m-d H:i:s");
             $bodies = [];
             for ($i = 0; $i < 10; $i++) {
@@ -32,7 +32,7 @@ class PublishMulti extends Base
 
             $memory    = memory_get_usage() / 1024;
             $formatted = number_format($memory, 3) . 'K';
-            dump("############ Current memory usage: {$formatted} ############");
+            $output->writeln("############ Current memory usage: {$formatted} ############");
         });
         $this->runLoop();
     }

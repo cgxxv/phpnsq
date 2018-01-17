@@ -13,6 +13,12 @@ class Writer
         return self::MAGIC_V2;
     }
 
+    //TODO:
+    public static function identify()
+    {
+        return self::command("IDENTIFY");
+    }
+
     public static function pub($topic, $body)
     {
         $cmd  = self::command("PUB", $topic);
@@ -35,10 +41,10 @@ class Writer
 
     public static function dpub($topic, $deferTime, $body)
     {
-        $cmd = self::command("DPUB", $topic, $deferTime);
+        $cmd  = self::command("DPUB", $topic, $deferTime);
         $size = IntPacker::uInt32(strlen($body), true);
 
-        return $cmd.$size.$body;
+        return $cmd . $size . $body;
     }
 
     public static function sub($topic, $channel)
@@ -49,11 +55,6 @@ class Writer
     public static function rdy($count)
     {
         return self::command("RDY", $count);
-    }
-
-    public static function nop()
-    {
-        return self::command("NOP");
     }
 
     public static function fin($id)
@@ -71,9 +72,24 @@ class Writer
         return self::command("TOUCH", $id);
     }
 
-    public static function identify()
+    //TODO: should optimize use this command
+    public static function cls()
     {
-        return self::command("IDENTIFY");
+        return self::command("CLS");
+    }
+
+    public static function nop()
+    {
+        return self::command("NOP");
+    }
+
+    //TODO:
+    public static function auth($secret)
+    {
+        $cmd  = self::command("AUTH");
+        $size = IntPacker::uInt32(strlen($secret), true);
+
+        return $cmd . $size . $secret;
     }
 
     private static function command($action, ...$params)
