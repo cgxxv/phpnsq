@@ -24,6 +24,16 @@
         <!-- ###- symfony/swiftmailer-bundle ### -->
     </php>
 
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./src/phpnsq/</directory>
+            <exclude>
+                <directory suffix=".php">./src/config</directory>
+                <file>./src/config/phpnsq.yml</file>
+            </exclude>
+        </whitelist>
+    </filter>
+
     <testsuites>
         <testsuite name="Config">
             <directory suffix="Test.php">./tests</directory>

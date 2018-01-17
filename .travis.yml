@@ -9,6 +9,10 @@ install:
   - docker run -d --name lookupd -p 4160:4160 -p 4161:4161 nsqio/nsq /nsqlookupd
   - docker run -d --name nsqd -p 4150:4150 -p 4151:4151 nsqio/nsq /nsqd
   - composer install
+  - composer dump-autoload --optimize
 
 script:
-  - phpunit -v --coverage-clover ./coverage.xml
+  - phpunit -v --coverage-clover=coverage.xml
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

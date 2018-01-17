@@ -2,7 +2,6 @@
 
 namespace OkStuff\PhpNsq\Tunnel;
 
-use Exception;
 use OkStuff\PhpNsq\Utility\Stream;
 use OkStuff\PhpNsq\Wire\Writer;
 
