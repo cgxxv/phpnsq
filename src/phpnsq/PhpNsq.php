@@ -5,7 +5,6 @@ namespace OkStuff\PhpNsq;
 use Closure;
 use Exception;
 use OkStuff\PhpNsq\Command\Base as SubscribeCommand;
-use OkStuff\PhpNsq\Message\Message;
 use OkStuff\PhpNsq\Tunnel\Pool;
 use OkStuff\PhpNsq\Tunnel\Tunnel;
 use OkStuff\PhpNsq\Utility\Logging;
@@ -46,11 +45,11 @@ class PhpNsq
         return $this;
     }
 
-    public function publish(Message $message)
+    public function publish($message)
     {
         try {
             $tunnel = $this->pool->getTunnel();
-            $tunnel->write(Writer::pub($this->topic, json_encode($message->getBody())));
+            $tunnel->write(Writer::pub($this->topic, $message));
         } catch (Exception $e) {
             $this->logger->error("publish error", $e);
         }
@@ -66,11 +65,11 @@ class PhpNsq
         }
     }
 
-    public function publishDefer(Message $message, $deferTime)
+    public function publishDefer($message, $deferTime)
     {
         try {
             $tunnel = $this->pool->getTunnel();
-            $tunnel->write(Writer::dpub($this->topic, $deferTime, json_encode($message->getBody())));
+            $tunnel->write(Writer::dpub($this->topic, $deferTime, $message));
         } catch (Exception $e) {
             $this->logger->error("publish error", $e);
         }
