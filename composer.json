@@ -3,7 +3,7 @@
     "description": "PHP Client for nsq",
     "type": "library",
     "keywords": ["nsq", "queue"],
-    "homepage": "http://github.com/okstuff/phpnsq",
+    "homepage": "http://github.com/stackerzzq/phpnsq",
     "require": {
         "monolog/monolog": "^1.23",
         "symfony/console": "^4.0",
