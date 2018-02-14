@@ -4,7 +4,9 @@
 require __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\Console\Application;
-use OkStuff\PhpNsq\Command\Subscribe;
+//use OkStuff\PhpNsq\Command\Subscribe;
+
+require __DIR__.'/subscribe.php';
 
 $application = new Application();
 

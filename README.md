@@ -56,12 +56,7 @@ $phpnsq->setTopic("sample_topic")->publishMulti(...$messages);
 
 [embedmd]:# (examples/subscribe.php php)
 ```php
-#!/usr/bin/env php
 <?php
-
-require __DIR__.'/../vendor/autoload.php';
-
-use Symfony\Component\Console\Application;
 
 use OkStuff\PhpNsq\Message\Message;
 use OkStuff\PhpNsq\Command\Base;
@@ -98,14 +93,6 @@ class Subscribe extends Base
         $this->runLoop();
     }
 }
-
-$application = new Application();
-
-$config = require __DIR__.'/../src/config/phpnsq.php';
-
-$application->add(new Subscribe($config));
-
-$application->run();
 ```
 
 3. Console
@@ -118,7 +105,9 @@ $application->run();
 require __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\Console\Application;
-use OkStuff\PhpNsq\Command\Subscribe;
+//use OkStuff\PhpNsq\Command\Subscribe;
+
+require __DIR__.'/subscribe.php';
 
 $application = new Application();
 
