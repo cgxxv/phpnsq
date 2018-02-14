@@ -2,14 +2,14 @@
 
 [![Build Status](https://travis-ci.org/okstuff/phpnsq.svg?branch=master)](https://travis-ci.org/okstuff/phpnsq)
 
-## Subscribe one topic and channel
-```shell
-php bin/console phpnsq:sub <topic> <channel>
-```
-
 ## Install
 ```shell
 composer require okstuff/phpnsq
+```
+
+## Subscribe one topic and channel
+```shell
+php examples/console phpnsq:sub <topic> <channel>
 ```
 
 ## Notice
@@ -108,8 +108,23 @@ $application->add(new Subscribe($config));
 $application->run();
 ```
 
-3. Run in the terminal
+3. Console
 
-```shell
-php examples/subscribe.php phpnsq:sub sample_topic sample_channel
+[embedmd]:# (examples/console php)
+```php
+#!/usr/bin/env php
+<?php
+
+require __DIR__.'/../vendor/autoload.php';
+
+use Symfony\Component\Console\Application;
+use OkStuff\PhpNsq\Command\Subscribe;
+
+$application = new Application();
+
+$config = require __DIR__.'/../src/config/phpnsq.php';
+
+$application->add(new Subscribe($config));
+
+$application->run();
 ```
