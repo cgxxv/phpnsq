@@ -1,22 +1,15 @@
 #!/usr/bin/env php
 <?php
-// application.php
 
 require __DIR__.'/../vendor/autoload.php';
 
-use OkStuff\PhpNsq\Command\PublishDefer;
-use OkStuff\PhpNsq\Command\PublishMulti;
 use Symfony\Component\Console\Application;
-use OkStuff\PhpNsq\Command\Publish;
 use OkStuff\PhpNsq\Command\Subscribe;
 
 $application = new Application();
 
 $config = require __DIR__.'/../src/config/phpnsq.php';
 
-$application->add(new Publish($config));
-$application->add(new PublishMulti($config));
-$application->add(new PublishDefer($config));
 $application->add(new Subscribe($config));
 
 $application->run();

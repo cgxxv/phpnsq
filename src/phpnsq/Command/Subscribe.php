@@ -28,10 +28,11 @@ class Subscribe extends Base
             ->subscribe($this, function (Message $message) use ($phpnsq, $output) {
                 $phpnsq->getLogger()->info("READ", $message);
             });
+        //excuted every five seconds.
         $this->addPeriodicTimer(5, function () use ($output) {
             $memory    = memory_get_usage() / 1024;
             $formatted = number_format($memory, 3) . 'K';
-            $output->writeln("############ Current memory usage: {$formatted} ############");
+            $output->writeln(date("Y-m-d H:i:s") . " ############ Current memory usage: {$formatted} ############");
         });
         $this->runLoop();
     }

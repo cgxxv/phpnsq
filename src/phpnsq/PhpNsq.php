@@ -91,7 +91,7 @@ class PhpNsq
         }
     }
 
-    public function handleMessage(Tunnel $tunnel, $callback)
+    protected function handleMessage(Tunnel $tunnel, $callback)
     {
         $reader = $this->reader->bindTunnel($tunnel)->bindFrame();
 
