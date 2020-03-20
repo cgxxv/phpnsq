@@ -17,7 +17,7 @@ class CustomerLineFormatter extends ColoredLineFormatter
     /**
      * {@inheritdoc}
      */
-    public function format(array $record)
+    public function format(array $record) : string
     {
         $vars = parent::normalize($record);
 
