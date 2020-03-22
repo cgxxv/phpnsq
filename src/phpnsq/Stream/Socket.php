@@ -1,10 +1,10 @@
 <?php
 
-namespace OkStuff\PhpNsq\Utility;
+namespace OkStuff\PhpNsq\Stream;
 
 use Exception;
 
-class Stream
+class Socket
 {
     public static function pfopen($host, $port)
     {
@@ -45,7 +45,7 @@ class Stream
         if ($read || $write) {
             $except = null;
 
-            $available = @stream_select($read, $write, $except, $timeout === null ? null : 0, $timeout);
+            $available = @stream_select($read, $write, $except, 0, $timeout);
             if ($available > 0) {
                 return $available;
             } else if ($available === 0) {

@@ -1,11 +1,11 @@
 <?php
 
-namespace OkStuff\PhpNsq\Tunnel;
+namespace OkStuff\PhpNsq\Conn;
 
-use OkStuff\PhpNsq\Utility\Stream;
-use OkStuff\PhpNsq\Wire\Writer;
+use OkStuff\PhpNsq\Stream\Socket;
+use OkStuff\PhpNsq\Stream\Writer;
 
-class Tunnel
+class Conn
 {
     private $config;
     private $sock;
@@ -30,9 +30,9 @@ class Tunnel
         $timeout      = $this->config->get("readTimeout")["default"];
         $this->reader = [$sock = $this->getSock()];
         while (strlen($data) < $len) {
-            $readable = Stream::select($this->reader, $this->writer, $timeout);
+            $readable = Socket::select($this->reader, $this->writer, $timeout);
             if ($readable > 0) {
-                $buffer = Stream::recvFrom($sock, $len);
+                $buffer = Socket::recvFrom($sock, $len);
                 $data   .= $buffer;
                 $len    -= strlen($buffer);
             }
@@ -46,9 +46,9 @@ class Tunnel
         $timeout      = $this->config->get("writeTimeout")["default"];
         $this->writer = [$sock = $this->getSock()];
         while (strlen($buffer) > 0) {
-            $writable = Stream::select($this->reader, $this->writer, $timeout);
+            $writable = Socket::select($this->reader, $this->writer, $timeout);
             if ($writable > 0) {
-                $buffer = substr($buffer, Stream::sendTo($sock, $buffer));
+                $buffer = substr($buffer, Socket::sendTo($sock, $buffer));
             }
         }
 
@@ -63,7 +63,7 @@ class Tunnel
     public function getSock()
     {
         if (null === $this->sock) {
-            $this->sock = Stream::pfopen($this->config->host, $this->config->port);
+            $this->sock = Socket::pfopen($this->config->host, $this->config->port);
 
             if (false === $this->config->get("blocking")) {
                 stream_set_blocking($this->sock, 0);
@@ -73,15 +73,5 @@ class Tunnel
         }
 
         return $this->sock;
-    }
-
-    //TODO:
-    public function setIdentify()
-    {
-        if (false === $this->identify) {
-            $this->write(Writer::identify());
-        }
-
-        return $this;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace OkStuff\PhpNsq\Tunnel;
+namespace OkStuff\PhpNsq\Conn;
 
 class Pool
 {
@@ -10,20 +10,20 @@ class Pool
     {
         foreach ($nsq["nsq"]["nsqd-addrs"] as $value) {
             $addr = explode(":", $value);
-            $this->addTunnel(new Tunnel(
+            $this->addConn(new Conn(
                 new Config($addr[0], $addr[1])
             ));
         }
     }
 
-    public function addTunnel(Tunnel $tunnel)
+    public function addConn(Conn $conn)
     {
-        array_push($this->pool, $tunnel);
+        array_push($this->pool, $conn);
 
         return $this;
     }
 
-    public function getTunnel()
+    public function getConn()
     {
         return $this->pool[array_rand($this->pool)];
     }

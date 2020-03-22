@@ -1,11 +1,9 @@
 <?php
 
-namespace OkStuff\PhpNsq\Wire;
+namespace OkStuff\PhpNsq\Stream;
 
 use Exception;
-use OkStuff\PhpNsq\Message\Message;
-use OkStuff\PhpNsq\Tunnel\Tunnel;
-use OkStuff\PhpNsq\Utility\IntPacker;
+use OkStuff\PhpNsq\Conn\Conn;
 
 class Reader
 {
@@ -16,17 +14,17 @@ class Reader
     const HEARTBEAT = "_heartbeat_";
     const OK        = "OK";
 
-    private $tunnel;
+    private $conn;
     private $frame;
 
-    public function __construct(Tunnel $tunnel = null)
+    public function __construct(Conn $conn = null)
     {
-        $this->tunnel = $tunnel;
+        $this->conn = $conn;
     }
 
-    public function bindTunnel(Tunnel $tunnel)
+    public function bindConn(Conn $conn)
     {
-        $this->tunnel = $tunnel;
+        $this->conn = $conn;
 
         return $this;
     }
@@ -109,24 +107,24 @@ class Reader
 
     private function readInt($size)
     {
-        list(, $tmp) = unpack("N", $this->tunnel->read($size));
+        list(, $tmp) = unpack("N", $this->conn->read($size));
 
         return sprintf("%u", $tmp);
     }
 
     private function readInt64($size)
     {
-        return IntPacker::int64($this->tunnel->read($size));
+        return IntPacker::int64($this->conn->read($size));
     }
 
     private function readUInt16($size)
     {
-        return IntPacker::uInt16($this->tunnel->read($size));
+        return IntPacker::uInt16($this->conn->read($size));
     }
 
     private function readString($size)
     {
-        $bytes = unpack("c{$size}chars", $this->tunnel->read($size));
+        $bytes = unpack("c{$size}chars", $this->conn->read($size));
 
         return implode(array_map("chr", $bytes));
     }

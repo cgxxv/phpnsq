@@ -1,6 +1,6 @@
 <?php
 
-namespace OkStuff\PhpNsq\Command;
+namespace OkStuff\PhpNsq\Cmd;
 
 use Closure;
 use OkStuff\PhpNsq\PhpNsq;
@@ -12,12 +12,15 @@ class Base extends Command
     protected static $phpnsq;
     private static   $loop;
 
-    public function __construct(array $config = null, $name = null)
+    public function __construct(array $config = null, $name = null, $auth = false)
     {
         parent::__construct($name);
 
         self::$loop   = Factory::create();
         self::$phpnsq = new PhpNsq($config);
+        if ($auth) {
+            self::$phpnsq->auth($config["nsq"]["auth_secret"]);
+        }
     }
 
     public function runLoop()

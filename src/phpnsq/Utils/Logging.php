@@ -1,12 +1,11 @@
 <?php
 
-namespace OkStuff\PhpNsq\Utility;
+namespace OkStuff\PhpNsq\Utils;
 
 use Exception;
 use Monolog\Formatter\HtmlFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
-use OkStuff\PhpNsq\Internals\CustomerLineFormatter;
 
 class Logging
 {
@@ -19,7 +18,7 @@ class Logging
         $this->dirname = $dirname;
 
         $this->handler->pushHandler((new StreamHandler($this->getLogFile()))->setFormatter(new HtmlFormatter()));
-        $this->handler->pushHandler((new StreamHandler("php://stdout"))->setFormatter(new CustomerLineFormatter(true)));
+        $this->handler->pushHandler((new StreamHandler("php://stdout"))->setFormatter(new LogFormatter(true)));
     }
 
     public function getHandler()
@@ -29,22 +28,27 @@ class Logging
 
     public function debug($msg, ...$context)
     {
-        $this->handler->debug($msg, [var_export($context, true)]);
+        $this->handler->debug($msg, $context);
     }
 
     public function info($msg, ...$context)
     {
-        $this->handler->info($msg, [var_export($context, true)]);
+        $this->handler->info($msg, $context);
     }
 
     public function warn($msg, ...$context)
     {
-        $this->handler->warn($msg, [var_export($context, true)]);
+        $this->handler->warning($msg, $context);
     }
 
     public function error($msg, ...$context)
     {
-        $this->handler->error($msg, [var_export($context, true)]);
+        $this->handler->error($msg, $context);
+    }
+
+    public function notice($msg, ...$context)
+    {
+        $this->handler->notice($msg, $context);
     }
 
     private function getLogFile()

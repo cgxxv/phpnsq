@@ -1,10 +1,10 @@
 <?php
 
-namespace OkStuff\PhpNsq\Internals;
+namespace OkStuff\PhpNsq\Utils;
 
 use Bramus\Monolog\Formatter\ColoredLineFormatter;
 
-class CustomerLineFormatter extends ColoredLineFormatter
+class LogFormatter extends ColoredLineFormatter
 {
     private $coloredOrNot;
 

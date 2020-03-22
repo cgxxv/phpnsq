@@ -1,6 +1,6 @@
 <?php
 
-namespace OkStuff\PhpNsq\Tunnel;
+namespace OkStuff\PhpNsq\Conn;
 
 use Exception;
 

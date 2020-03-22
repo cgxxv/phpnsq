@@ -7,5 +7,6 @@ return [
             // "192.168.33.10:4150",
         ],
         "logdir" => "/tmp",
+        "auth_secret" => "secret",
     ],
 ];
