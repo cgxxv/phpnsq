@@ -6,8 +6,6 @@ require __DIR__.'/../vendor/autoload.php';
 use Symfony\Component\Console\Application;
 use OkStuff\PhpNsq\Cmd\Subscribe;
 
-require __DIR__.'/subscribe.php';
-
 $application = new Application();
 
 $config = require __DIR__.'/../src/config/phpnsq.php';
