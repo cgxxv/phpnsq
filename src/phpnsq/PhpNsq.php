@@ -59,6 +59,7 @@ class PhpNsq
     {
         try {
             $conn = $this->pool->getConn();
+            var_dump(stream_context_get_options($conn->getSock()));
             $conn->write(Writer::pub($this->topic, $message));
         } catch (Exception $e) {
             $this->logger->error("publish error", $e);

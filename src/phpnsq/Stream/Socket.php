@@ -6,9 +6,9 @@ use Exception;
 
 class Socket
 {
-    public static function pfopen($host, $port)
+    public static function client($host, $port)
     {
-        $socket = pfsockopen($host, $port, $errno, $errstr);
+        $socket = stream_socket_client("tcp://$host:$port", $errno, $errstr);
         if (false === $socket) {
             throw new Exception("Could not connect to {$host}:{$port} [{$errno}]:[{$errstr}]");
         }

@@ -63,13 +63,50 @@ class Conn
     public function getSock()
     {
         if (null === $this->sock) {
-            $this->sock = Socket::pfopen($this->config->host, $this->config->port);
+            $this->sock = Socket::client($this->config->host, $this->config->port);
 
             if (false === $this->config->get("blocking")) {
                 stream_set_blocking($this->sock, 0);
             }
 
             $this->write(Writer::MAGIC_V2);
+            $this->write(Writer::identify(["tls_v1" => true]));
+
+            //FIXME: Really shit php code.
+            $tlsConfig=$this->config->get("tlsConfig");
+            $context = $this->sock;
+            if (null !== $tlsConfig) {
+                if ($tlsConfig["local_cert"]) {
+                    if (!file_exists($tlsConfig["local_cert"])) {
+                        throw new Exception("Local cert file not exists");
+                    }
+                    if (!stream_context_set_option($context, 'tcp', 'local_cert', $tlsConfig["local_cert"])) {
+                        throw new Exception("Could not set cert");
+                    }
+                }
+                if ($tlsConfig["local_pk"]) {
+                    if (!file_exists($tlsConfig["local_pk"])) {
+                        throw new Exception("Local pk file not exists");
+                    }
+                    if (!stream_context_set_option($context, 'tcp', 'local_pk', $tlsConfig["local_pk"])) {
+                        throw new Exception("Could not set local_pk");
+                    }
+                }
+                if ($tlsConfig["passphrase"] && !stream_context_set_option($context, 'tcp', 'passphrase', $tlsConfig["passphrase"])) {
+                    throw New Exception("Could not set passphrase for your ssl cert");
+                }
+                if ($tlsConfig["cn_match"] && !stream_context_set_option($context, 'tcp', 'CN_match', $tlsConfig["cn_match"])) {
+                    throw new Exception("Could not set CN_match");
+                }
+                if ($tlsConfig["peer_fingerprint"] && !stream_context_set_option($context, 'tcp', 'peer_fingerprint', $tlsConfig["peer_fingerprint"])) {
+                    throw new Exception("Could not set peer_fingerprint");
+                }
+                stream_context_set_option($context, 'tcp', 'allow_self_signed', true);
+                stream_context_set_option($context, 'tcp', 'verify_peer', true);
+                stream_context_set_option($context, 'tcp', 'cafile', $tlsConfig["cafile"]);
+            }
+
+            $this->sock = $context;
         }
 
         return $this->sock;

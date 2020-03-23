@@ -10,9 +10,11 @@ class Pool
     {
         foreach ($nsq["nsq"]["nsqd-addrs"] as $value) {
             $addr = explode(":", $value);
-            $this->addConn(new Conn(
-                new Config($addr[0], $addr[1])
-            ));
+            $config = new Config($addr[0], $addr[1]);
+            if (!empty($nsq["nsq"]["tls_config"])) {
+                $config->set("tlsConfig", $nsq["nsq"]["tls_config"]);
+            }
+            $this->addConn(new Conn($config));
         }
     }
 
