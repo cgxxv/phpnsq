@@ -26,7 +26,7 @@ class Subscribe extends Base
         $phpnsq->setTopic($input->getArgument("topic"))
             ->setChannel($input->getArgument("channel"))
             ->subscribe($this, function (Message $message) use ($phpnsq, $output) {
-                $output->writeln($message->toJson());
+                // $output->writeln($message->toJson());
                 $phpnsq->getLogger()->info("READ", $message->toArray());
             });
         //excuted every five seconds.

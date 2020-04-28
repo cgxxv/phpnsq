@@ -70,12 +70,13 @@ class Conn
             }
 
             $this->write(Writer::MAGIC_V2);
-            $this->write(Writer::identify(["tls_v1" => true]));
 
             //FIXME: Really shit php code.
             $tlsConfig=$this->config->get("tlsConfig");
             $context = $this->sock;
             if (null !== $tlsConfig) {
+                $this->write(Writer::identify(["tls_v1" => true]));
+
                 if ($tlsConfig["local_cert"]) {
                     if (!file_exists($tlsConfig["local_cert"])) {
                         throw new Exception("Local cert file not exists");

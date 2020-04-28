@@ -6,7 +6,9 @@ use OkStuff\PhpNsq\PhpNsq;
 $config = require __DIR__ . '/../src/config/phpnsq.php';
 $phpnsq = new PhpNsq($config);
 
-$phpnsq->auth($config["nsq"]["auth_secret"]);
+if ($config["nsq"]["auth_switch"]) {
+    $phpnsq->auth($config["nsq"]["auth_secret"]);
+}
 
 //normal publish
 $phpnsq->setTopic("test")->publish("Hello nsq.");

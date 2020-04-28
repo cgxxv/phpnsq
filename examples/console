@@ -10,6 +10,6 @@ $application = new Application();
 
 $config = require __DIR__.'/../src/config/phpnsq.php';
 
-$application->add(new Subscribe($config, null, true));
+$application->add(new Subscribe($config, null, $config["nsq"]["auth_switch"]));
 
 $application->run();

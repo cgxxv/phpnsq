@@ -45,13 +45,14 @@ class Socket
         if ($read || $write) {
             $except = null;
 
-            $available = @stream_select($read, $write, $except, 0, $timeout);
+            $available = @stream_select($read, $write, $except, $timeout);
             if ($available > 0) {
                 return $available;
             } else if ($available === 0) {
-                throw new Exception("stream_select() timeout : " . json_encode($streamPool) . " after {$timeout} seconds");
+                var_dump(date("Y-m-d H:i:s"));
+                throw new Exception("stream_select() timeout after {$timeout} seconds");
             } else {
-                throw new Exception("stream_select() failed : " . json_encode($streamPool));
+                throw new Exception("stream_select() failed");
             }
         }
 
