@@ -29,7 +29,9 @@ use OkStuff\PhpNsq\PhpNsq;
 $config = require __DIR__ . '/../src/config/phpnsq.php';
 $phpnsq = new PhpNsq($config);
 
-$phpnsq->auth($config["nsq"]["auth_secret"]);
+if ($config["nsq"]["auth_switch"]) {
+    $phpnsq->auth($config["nsq"]["auth_secret"]);
+}
 
 //normal publish
 $phpnsq->setTopic("test")->publish("Hello nsq.");
@@ -78,7 +80,7 @@ class Subscribe extends Base
         $phpnsq->setTopic($input->getArgument("topic"))
             ->setChannel($input->getArgument("channel"))
             ->subscribe($this, function (Message $message) use ($phpnsq, $output) {
-                $output->writeln($message->toJson());
+                // $output->writeln($message->toJson());
                 $phpnsq->getLogger()->info("READ", $message->toArray());
             });
         //excuted every five seconds.
@@ -108,7 +110,7 @@ $application = new Application();
 
 $config = require __DIR__.'/../src/config/phpnsq.php';
 
-$application->add(new Subscribe($config, null, true));
+$application->add(new Subscribe($config, null, $config["nsq"]["auth_switch"]));
 
 $application->run();
 ```
