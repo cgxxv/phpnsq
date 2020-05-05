@@ -11,10 +11,12 @@ if ($config["nsq"]["auth_switch"]) {
 }
 
 //normal publish
-$phpnsq->setTopic("test")->publish("Hello nsq.");
+$msg = $phpnsq->setTopic("sample_topic")->publish("Hello nsq.");
+var_dump($msg);
 
 //defered publish
-$phpnsq->setTopic("sample_topic")->publishDefer("this is a defered message.", 10);
+$msg = $phpnsq->setTopic("sample_topic")->publishDefer("this is a defered message.", 10);
+var_dump($msg);
 
 //multiple publish
 $messages = [
@@ -22,4 +24,5 @@ $messages = [
     "There are so many libraries developed by PHP",
     "Oh, no, PHP is not so good and slowly",
 ];
-$phpnsq->setTopic("sample_topic")->publishMulti(...$messages);
+$msg = $phpnsq->setTopic("sample_topic")->publishMulti(...$messages);
+var_dump($msg);

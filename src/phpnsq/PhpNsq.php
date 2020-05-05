@@ -47,42 +47,66 @@ class PhpNsq
 
     public function auth(string $secret)
     {
+        $msg = null;
         try {
             $conn = $this->pool->getConn();
             $conn->write(Writer::auth($secret));
+
+            $msg = $this->reader->bindConn($conn)->bindFrame()->getMessage();
         } catch (Exception $e) {
             $this->logger->error("auth error", $e);
+            $msg = $e->getMessage();
         }
+
+        return $msg;
     }
 
     public function publish(string $message)
     {
+        $msg = null;
         try {
             $conn = $this->pool->getConn();
             $conn->write(Writer::pub($this->topic, $message));
+
+            $msg = $this->reader->bindConn($conn)->bindFrame()->getMessage();
         } catch (Exception $e) {
             $this->logger->error("publish error", $e);
+            $msg = $e->getMessage();
         }
+
+        return $msg;
     }
 
     public function publishMulti(string ...$messages)
     {
+        $msg = null;
         try {
             $conn = $this->pool->getConn();
             $conn->write(Writer::mpub($this->topic, $messages));
+
+            $msg = $this->reader->bindConn($conn)->bindFrame()->getMessage();
         } catch (Exception $e) {
             $this->logger->error("publish error", $e);
+            $msg = $e->getMessage();
         }
+
+        return $msg;
     }
 
     public function publishDefer(string $message, int $deferTime)
     {
+        $msg = null;
         try {
             $conn = $this->pool->getConn();
             $conn->write(Writer::dpub($this->topic, $deferTime, $message));
+
+            $msg = $this->reader->bindConn($conn)->bindFrame()->getMessage();
         } catch (Exception $e) {
             $this->logger->error("publish error", $e);
+            $msg = $e->getMessage();
         }
+
+        return $msg;
     }
 
     public function subscribe(SubscribeCommand $cmd, Closure $callback)

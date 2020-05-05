@@ -72,15 +72,27 @@ class Reader
     //                         attempts
     public function getMessage()
     {
-        if (null !== $this->frame && self::TYPE_MESSAGE == $this->frame["type"]) {
-            return (new Message())->setTimestamp($this->readInt64(8))
-                ->setAttempts($this->readUInt16(2))
-                ->setId($this->readString(16))
-                ->setBody($this->readString($this->frame["size"] - 30))
-                ->setDecoded();
+        $msg = null;
+        if (null !== $this->frame) {
+            switch ($this->frame["type"]) {
+                case self::TYPE_MESSAGE:
+                    $msg = (new Message())->setTimestamp($this->readInt64(8))
+                        ->setAttempts($this->readUInt16(2))
+                        ->setId($this->readString(16))
+                        ->setBody($this->readString($this->frame["size"] - 30))
+                        ->setDecoded();
+                    break;
+                case self::TYPE_RESPONSE:
+                    $msg = $this->frame["response"];
+                    break;
+                case self::TYPE_ERROR:
+                    $msg = $this->frame["error"];
+                    break;
+            }
+            
         }
 
-        return null;
+        return $msg;
     }
 
     public function isMessage()
