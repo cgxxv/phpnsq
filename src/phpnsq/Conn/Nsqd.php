@@ -2,6 +2,8 @@
 
 namespace OkStuff\PhpNsq\Conn;
 
+use OkStuff\PhpNsq\Utils\Logging;
+use OkStuff\PhpNsq\Stream\Reader;
 use OkStuff\PhpNsq\Stream\Socket;
 use OkStuff\PhpNsq\Stream\Writer;
 
@@ -118,7 +120,6 @@ class Nsqd
     {
         if ($this->config->get("authSwitch")) {
             $this->write(Writer::auth($this->config->get("authSecret")));
-
             $msg = (new Reader())->bindConn($this)->bindFrame()->getMessage();
             (new Logging("PHPNSQ", $this->config->get("logdir")))->info($msg);
         }

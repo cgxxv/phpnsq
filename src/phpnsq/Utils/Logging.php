@@ -3,7 +3,7 @@
 namespace OkStuff\PhpNsq\Utils;
 
 use Exception;
-use Monolog\Formatter\HtmlFormatter;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
@@ -17,7 +17,7 @@ class Logging
         $this->handler = new Logger($name);
         $this->dirname = $dirname;
 
-        $this->handler->pushHandler((new StreamHandler($this->getLogFile()))->setFormatter(new HtmlFormatter()));
+        $this->handler->pushHandler((new StreamHandler($this->getLogFile()))->setFormatter(new LineFormatter()));
         $this->handler->pushHandler((new StreamHandler("php://stdout"))->setFormatter(new LogFormatter(true)));
     }
 

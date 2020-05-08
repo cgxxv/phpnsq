@@ -13,11 +13,11 @@ class Pool
             foreach ($nsq["nsq"]["lookupd_addrs"] as $value) {
                 $addr = explode(":", $value);
                 $config = new Config($addr[0], $addr[1]);
+                $config->set("authSwitch", $nsq["nsq"]["auth_switch"])
+                    ->set("authSecret", $nsq["nsq"]["auth_secret"])
+                    ->set("logdir", $nsq["nsq"]["logdir"]);
                 if (!empty($nsq["nsq"]["tls_config"])) {
-                    $config->set("tlsConfig", $nsq["nsq"]["tls_config"])
-                        ->set("authSwitch", $nsq["nsq"]["auth_switch"])
-                        ->set("authSecret", $nsq["nsq"]["auth_secret"])
-                        ->set("logdir", $nsq["nsq"]["logdir"]);
+                    $config->set("tlsConfig", $nsq["nsq"]["tls_config"]);
                 }
                 $this->addLookupd(new Lookupd($config));
             }
@@ -25,11 +25,11 @@ class Pool
             foreach ($nsq["nsq"]["nsqd_addrs"] as $value) {
                 $addr = explode(":", $value);
                 $config = new Config($addr[0], $addr[1]);
+                $config->set("authSwitch", $nsq["nsq"]["auth_switch"])
+                    ->set("authSecret", $nsq["nsq"]["auth_secret"])
+                    ->set("logdir", $nsq["nsq"]["logdir"]);
                 if (!empty($nsq["nsq"]["tls_config"])) {
-                    $config->set("tlsConfig", $nsq["nsq"]["tls_config"])
-                        ->set("authSwitch", $nsq["nsq"]["auth_switch"])
-                        ->set("authSecret", $nsq["nsq"]["auth_secret"])
-                        ->set("logdir", $nsq["nsq"]["logdir"]);
+                    $config->set("tlsConfig", $nsq["nsq"]["tls_config"]);
                 }
                 $this->addConn(new Nsqd($config));
             }

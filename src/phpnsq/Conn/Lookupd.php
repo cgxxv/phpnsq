@@ -10,6 +10,8 @@ class Lookupd
 
     private $config;
 
+    private $nsqdConnected = false;
+
     public function __construct(Config $config)
     {
         $this->config = $config;
@@ -22,6 +24,12 @@ class Lookupd
 
     public function getProducers(string $topic)
     {
+        $nsqdConns = [];
+
+        if ($this->nsqdConnected) {
+            return $nsqdConns;
+        }
+
         $defaults = array(
             CURLOPT_URL => sprintf(self::lookupTopicUri, $this->config->host, $this->config->port, $topic),
             CURLOPT_HEADER => 0,
@@ -36,12 +44,12 @@ class Lookupd
         }
         curl_close($ch);
 
-        $nsqdConns = [];
-
         $d = json_decode($result, true);
         foreach ($d["producers"] as $producer) {
             array_push($nsqdConns, $this->connectProducer($producer));
         }
+
+        $this->nsqdConnected = true;
 
         return $nsqdConns;
     }
@@ -49,9 +57,12 @@ class Lookupd
     private function connectProducer($producer)
     {
         $config = new Config($producer["broadcast_address"], $producer["tcp_port"]);
-        $config->set("tlsConfig", $this->config->get("tlsConfig"))
-            ->set("authSwitch", $this->config->get("authSwitch"))
-            ->set("authSecret", $this->config->get("authSecret"));
+        $config->set("authSwitch", $this->config->get("authSwitch"))
+            ->set("authSecret", $this->config->get("authSecret"))
+            ->set("logdir", $this->config->get("logdir"));
+        if (!empty($this->config->get("tlsConfig"))) {
+            $config->set("tlsConfig", $this->config->get("tlsConfig"));
+        }
         return new Nsqd($config);
     }
 }
