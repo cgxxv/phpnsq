@@ -3,7 +3,7 @@
 namespace OkStuff\PhpNsq\Stream;
 
 use Exception;
-use OkStuff\PhpNsq\Conn\Conn;
+use OkStuff\PhpNsq\Conn\Nsqd;
 
 class Reader
 {
@@ -17,12 +17,12 @@ class Reader
     private $conn;
     private $frame;
 
-    public function __construct(Conn $conn = null)
+    public function __construct(Nsqd $conn = null)
     {
         $this->conn = $conn;
     }
 
-    public function bindConn(Conn $conn)
+    public function bindConn(Nsqd $conn)
     {
         $this->conn = $conn;
 

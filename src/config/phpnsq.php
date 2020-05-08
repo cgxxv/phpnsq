@@ -2,10 +2,13 @@
 
 return [
     "nsq" => [
-        "nsqd-addrs" => [
-            // "127.0.0.1:4150",
-            "192.168.0.102:4150",
+        "nsqd_addrs" => [
+            "127.0.0.1:4150",
         ],
+        "lookupd_addrs" => [
+            "127.0.0.1:4161",//only support http protocol
+        ],
+        "lookupd_switch" => true,//recommend to use lookupd
         "logdir" => "/tmp",
         "auth_secret" => "secret",
         "auth_switch" => false,

@@ -5,7 +5,7 @@ namespace OkStuff\PhpNsq\Conn;
 use OkStuff\PhpNsq\Stream\Socket;
 use OkStuff\PhpNsq\Stream\Writer;
 
-class Conn
+class Nsqd
 {
     private $config;
     private $sock;
@@ -70,6 +70,7 @@ class Conn
             }
 
             $this->write(Writer::MAGIC_V2);
+            $this->auth();
 
             //FIXME: Really shit php code.
             $tlsConfig=$this->config->get("tlsConfig");
@@ -111,5 +112,15 @@ class Conn
         }
 
         return $this->sock;
+    }
+
+    private function auth()
+    {
+        if ($this->config->get("authSwitch")) {
+            $this->write(Writer::auth($this->config->get("authSecret")));
+
+            $msg = (new Reader())->bindConn($this)->bindFrame()->getMessage();
+            (new Logging("PHPNSQ", $this->config->get("logdir")))->info($msg);
+        }
     }
 }

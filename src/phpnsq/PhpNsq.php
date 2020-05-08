@@ -6,7 +6,7 @@ use Closure;
 use Exception;
 use OkStuff\PhpNsq\Cmd\Base as SubscribeCommand;
 use OkStuff\PhpNsq\Conn\Pool;
-use OkStuff\PhpNsq\Conn\Conn;
+use OkStuff\PhpNsq\Conn\Nsqd;
 use OkStuff\PhpNsq\Utils\Logging;
 use OkStuff\PhpNsq\Stream\Reader;
 use OkStuff\PhpNsq\Stream\Writer;
@@ -23,7 +23,7 @@ class PhpNsq
     {
         $this->reader = new reader();
         $this->logger = new Logging("PHPNSQ", $nsq["nsq"]["logdir"]);
-        $this->pool   = new Pool($nsq);
+        $this->pool   = new Pool($nsq, $nsq["nsq"]["lookupd_switch"]);
     }
 
     public function getLogger()
@@ -42,23 +42,12 @@ class PhpNsq
     {
         $this->topic = $topic;
 
-        return $this;
-    }
-
-    public function auth(string $secret)
-    {
-        $msg = null;
-        try {
-            $conn = $this->pool->getConn();
-            $conn->write(Writer::auth($secret));
-
-            $msg = $this->reader->bindConn($conn)->bindFrame()->getMessage();
-        } catch (Exception $e) {
-            $this->logger->error("auth error", $e);
-            $msg = $e->getMessage();
+        if ($this->pool->getLookupdCount() > 0) {
+            $lookupd = $this->pool->getLookupd();
+            $this->pool->addNsqdByLookupd($lookupd, $topic);
         }
 
-        return $msg;
+        return $this;
     }
 
     public function publish(string $message)
@@ -126,7 +115,7 @@ class PhpNsq
         }
     }
 
-    protected function handleMessage(Conn $conn, Closure $callback)
+    protected function handleMessage(Nsqd $conn, Closure $callback)
     {
         $reader = $this->reader->bindConn($conn)->bindFrame();
 

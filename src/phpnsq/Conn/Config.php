@@ -47,7 +47,13 @@ class Config
 
     private $blocking = true;
 
-    public function __construct($host, $port)
+    private $authSwitch = false;
+
+    private $authSecret = "";
+    
+    private $logdir = "";
+
+    public function __construct($host = "", $port = 0)
     {
         $this->host = $host;
         $this->port = $port;

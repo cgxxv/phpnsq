@@ -12,15 +12,12 @@ class Base extends Command
     protected static $phpnsq;
     private static   $loop;
 
-    public function __construct(array $config = null, $name = null, $auth = false)
+    public function __construct(array $config = null, $name = null)
     {
         parent::__construct($name);
 
         self::$loop   = Factory::create();
         self::$phpnsq = new PhpNsq($config);
-        if ($auth) {
-            self::$phpnsq->auth($config["nsq"]["auth_secret"]);
-        }
     }
 
     public function runLoop()
