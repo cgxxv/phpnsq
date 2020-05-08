@@ -1,6 +1,6 @@
 <?php
 
-namespace OkStuff\PhpNsq\Command;
+namespace OkStuff\PhpNsq\Cmd;
 
 use Closure;
 use OkStuff\PhpNsq\PhpNsq;

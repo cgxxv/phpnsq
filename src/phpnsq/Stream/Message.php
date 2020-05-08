@@ -1,6 +1,6 @@
 <?php
 
-namespace OkStuff\PhpNsq\Message;
+namespace OkStuff\PhpNsq\Stream;
 
 class Message
 {
@@ -141,5 +141,23 @@ class Message
         $this->delegate = $delegate;
 
         return $this;
+    }
+
+    public function toArray()
+    {
+        return [
+            "id" => $this->getId(),
+            "body" => $this->getBody(),
+            "timestamp" => $this->getTimestamp(),
+            "decoded" => $this->isDecoded(),
+            "attempts" => $this->getAttempts(),
+            "nsqdAddr" => $this->getNsqdAddr(),
+            "delegate" => $this->getDelegate(),
+        ];
+    }
+
+    public function toJson()
+    {
+        return json_encode($this->toArray(), JSON_FORCE_OBJECT);
     }
 }

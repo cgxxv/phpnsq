@@ -4,14 +4,12 @@
 require __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\Console\Application;
-//use OkStuff\PhpNsq\Command\Subscribe;
-
-require __DIR__.'/subscribe.php';
+use OkStuff\PhpNsq\Cmd\Subscribe;
 
 $application = new Application();
 
 $config = require __DIR__.'/../src/config/phpnsq.php';
 
-$application->add(new Subscribe($config));
+$application->add(new Subscribe($config, null));
 
 $application->run();

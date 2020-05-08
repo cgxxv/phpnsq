@@ -1,6 +1,6 @@
 <?php
 
-namespace OkStuff\PhpNsq\Utility;
+namespace OkStuff\PhpNsq\Stream;
 
 class IntPacker
 {

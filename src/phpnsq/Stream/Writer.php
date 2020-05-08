@@ -1,8 +1,6 @@
 <?php
 
-namespace OkStuff\PhpNsq\Wire;
-
-use OkStuff\PhpNsq\Utility\IntPacker;
+namespace OkStuff\PhpNsq\Stream;
 
 class Writer
 {
@@ -11,12 +9,6 @@ class Writer
     public static function magic()
     {
         return self::MAGIC_V2;
-    }
-
-    //TODO:
-    public static function identify()
-    {
-        return self::command("IDENTIFY");
     }
 
     public static function pub($topic, $body)
@@ -83,7 +75,15 @@ class Writer
         return self::command("NOP");
     }
 
-    //TODO:
+    public static function identify(array $arr)
+    {
+        $cmd = self::command("IDENTIFY");
+        $body = json_encode($arr, JSON_FORCE_OBJECT);
+        $size = IntPacker::uInt32(strlen($body), true);
+
+        return $cmd . $size .$body;
+    }
+
     public static function auth($secret)
     {
         $cmd  = self::command("AUTH");
@@ -94,6 +94,12 @@ class Writer
 
     private static function command($action, ...$params)
     {
-        return sprintf("%s %s%s", $action, implode(' ', $params), "\n");
+        $str = $action;
+        if (count($params) >= 1) {
+            $str .= sprintf(" %s", implode(" ", $params));
+        }
+        $str .= "\n";
+
+        return $str;
     }
 }

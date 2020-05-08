@@ -1,10 +1,10 @@
 <?php
 
-namespace OkStuff\PhpNsq\Internals;
+namespace OkStuff\PhpNsq\Utils;
 
 use Bramus\Monolog\Formatter\ColoredLineFormatter;
 
-class CustomerLineFormatter extends ColoredLineFormatter
+class LogFormatter extends ColoredLineFormatter
 {
     private $coloredOrNot;
 
@@ -17,7 +17,7 @@ class CustomerLineFormatter extends ColoredLineFormatter
     /**
      * {@inheritdoc}
      */
-    public function format(array $record)
+    public function format(array $record) : string
     {
         $vars = parent::normalize($record);
 

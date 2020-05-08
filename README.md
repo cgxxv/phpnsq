@@ -22,26 +22,20 @@ Before try this, you should install [nsq](http://nsq.io) by yourself.
 [embedmd]:# (examples/publish.php php)
 ```php
 <?php
-
 require __DIR__ . "/../vendor/autoload.php";
 
-use OkStuff\PhpNsq\Message\Message;
 use OkStuff\PhpNsq\PhpNsq;
 
 $config = require __DIR__ . '/../src/config/phpnsq.php';
 $phpnsq = new PhpNsq($config);
 
 //normal publish
-$message = new Message();
-$message->setBody("Hello nsq.");
-$phpnsq->setTopic("sample_topic")->publish(json_encode($message));
+$msg = $phpnsq->setTopic("sample_topic")->publish("Hello nsq.");
+var_dump($msg);
 
 //defered publish
-$message = [
-    "title"   => "hello",
-    "content" => "this is a nsq php client.",
-];
-$phpnsq->setTopic("sample_topic")->publishDefer(json_encode($message), 10);
+$msg = $phpnsq->setTopic("sample_topic")->publishDefer("this is a defered message.", 10);
+var_dump($msg);
 
 //multiple publish
 $messages = [
@@ -49,17 +43,19 @@ $messages = [
     "There are so many libraries developed by PHP",
     "Oh, no, PHP is not so good and slowly",
 ];
-$phpnsq->setTopic("sample_topic")->publishMulti(...$messages);
+$msg = $phpnsq->setTopic("sample_topic")->publishMulti(...$messages);
+var_dump($msg);
 ```
 
 2. Subscribe
 
-[embedmd]:# (examples/subscribe.php php)
+[embedmd]:# (src/phpnsq/Cmd/Subscribe.php php)
 ```php
 <?php
 
-use OkStuff\PhpNsq\Message\Message;
-use OkStuff\PhpNsq\Command\Base;
+namespace OkStuff\PhpNsq\Cmd;
+
+use OkStuff\PhpNsq\Stream\Message;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -83,12 +79,14 @@ class Subscribe extends Base
         $phpnsq->setTopic($input->getArgument("topic"))
             ->setChannel($input->getArgument("channel"))
             ->subscribe($this, function (Message $message) use ($phpnsq, $output) {
-                $phpnsq->getLogger()->info("READ", $message);
+                // $output->writeln($message->toJson());
+                $phpnsq->getLogger()->info("READ", $message->toArray());
             });
+        //excuted every five seconds.
         $this->addPeriodicTimer(5, function () use ($output) {
             $memory    = memory_get_usage() / 1024;
             $formatted = number_format($memory, 3) . 'K';
-            $output->writeln("############ Current memory usage: {$formatted} ############");
+            $output->writeln(date("Y-m-d H:i:s") . " ############ Current memory usage: {$formatted} ############");
         });
         $this->runLoop();
     }
@@ -105,15 +103,13 @@ class Subscribe extends Base
 require __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\Console\Application;
-//use OkStuff\PhpNsq\Command\Subscribe;
-
-require __DIR__.'/subscribe.php';
+use OkStuff\PhpNsq\Cmd\Subscribe;
 
 $application = new Application();
 
 $config = require __DIR__.'/../src/config/phpnsq.php';
 
-$application->add(new Subscribe($config));
+$application->add(new Subscribe($config, null));
 
 $application->run();
 ```

@@ -1,24 +1,18 @@
 <?php
-
 require __DIR__ . "/../vendor/autoload.php";
 
-use OkStuff\PhpNsq\Message\Message;
 use OkStuff\PhpNsq\PhpNsq;
 
 $config = require __DIR__ . '/../src/config/phpnsq.php';
 $phpnsq = new PhpNsq($config);
 
 //normal publish
-$message = new Message();
-$message->setBody("Hello nsq.");
-$phpnsq->setTopic("sample_topic")->publish(json_encode($message));
+$msg = $phpnsq->setTopic("sample_topic")->publish("Hello nsq.");
+var_dump($msg);
 
 //defered publish
-$message = [
-    "title"   => "hello",
-    "content" => "this is a nsq php client.",
-];
-$phpnsq->setTopic("sample_topic")->publishDefer(json_encode($message), 10);
+$msg = $phpnsq->setTopic("sample_topic")->publishDefer("this is a defered message.", 10);
+var_dump($msg);
 
 //multiple publish
 $messages = [
@@ -26,4 +20,5 @@ $messages = [
     "There are so many libraries developed by PHP",
     "Oh, no, PHP is not so good and slowly",
 ];
-$phpnsq->setTopic("sample_topic")->publishMulti(...$messages);
+$msg = $phpnsq->setTopic("sample_topic")->publishMulti(...$messages);
+var_dump($msg);

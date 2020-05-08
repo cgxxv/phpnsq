@@ -1,11 +1,9 @@
 <?php
 
-namespace OkStuff\PhpNsq\Wire;
+namespace OkStuff\PhpNsq\Stream;
 
 use Exception;
-use OkStuff\PhpNsq\Message\Message;
-use OkStuff\PhpNsq\Tunnel\Tunnel;
-use OkStuff\PhpNsq\Utility\IntPacker;
+use OkStuff\PhpNsq\Conn\Nsqd;
 
 class Reader
 {
@@ -16,17 +14,17 @@ class Reader
     const HEARTBEAT = "_heartbeat_";
     const OK        = "OK";
 
-    private $tunnel;
+    private $conn;
     private $frame;
 
-    public function __construct(Tunnel $tunnel = null)
+    public function __construct(Nsqd $conn = null)
     {
-        $this->tunnel = $tunnel;
+        $this->conn = $conn;
     }
 
-    public function bindTunnel(Tunnel $tunnel)
+    public function bindConn(Nsqd $conn)
     {
-        $this->tunnel = $tunnel;
+        $this->conn = $conn;
 
         return $this;
     }
@@ -74,15 +72,27 @@ class Reader
     //                         attempts
     public function getMessage()
     {
-        if (null !== $this->frame && self::TYPE_MESSAGE == $this->frame["type"]) {
-            return (new Message())->setTimestamp($this->readInt64(8))
-                ->setAttempts($this->readUInt16(2))
-                ->setId($this->readString(16))
-                ->setBody($this->readString($this->frame["size"] - 30))
-                ->setDecoded();
+        $msg = null;
+        if (null !== $this->frame) {
+            switch ($this->frame["type"]) {
+                case self::TYPE_MESSAGE:
+                    $msg = (new Message())->setTimestamp($this->readInt64(8))
+                        ->setAttempts($this->readUInt16(2))
+                        ->setId($this->readString(16))
+                        ->setBody($this->readString($this->frame["size"] - 30))
+                        ->setDecoded();
+                    break;
+                case self::TYPE_RESPONSE:
+                    $msg = $this->frame["response"];
+                    break;
+                case self::TYPE_ERROR:
+                    $msg = $this->frame["error"];
+                    break;
+            }
+            
         }
 
-        return null;
+        return $msg;
     }
 
     public function isMessage()
@@ -109,24 +119,24 @@ class Reader
 
     private function readInt($size)
     {
-        list(, $tmp) = unpack("N", $this->tunnel->read($size));
+        list(, $tmp) = unpack("N", $this->conn->read($size));
 
         return sprintf("%u", $tmp);
     }
 
     private function readInt64($size)
     {
-        return IntPacker::int64($this->tunnel->read($size));
+        return IntPacker::int64($this->conn->read($size));
     }
 
     private function readUInt16($size)
     {
-        return IntPacker::uInt16($this->tunnel->read($size));
+        return IntPacker::uInt16($this->conn->read($size));
     }
 
     private function readString($size)
     {
-        $bytes = unpack("c{$size}chars", $this->tunnel->read($size));
+        $bytes = unpack("c{$size}chars", $this->conn->read($size));
 
         return implode(array_map("chr", $bytes));
     }
