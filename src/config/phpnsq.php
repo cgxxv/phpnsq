@@ -2,7 +2,7 @@
 
 return [
     "nsq" => [
-        "nsqd_addrs" => [
+        "nsqd_addrs" => [//this is needed
             "127.0.0.1:4150",
         ],
         "lookupd_addrs" => [

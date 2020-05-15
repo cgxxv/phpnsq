@@ -45,6 +45,10 @@ class Lookupd
         curl_close($ch);
 
         $d = json_decode($result, true);
+        if (isset($d["message"]) && $d["message"] == "TOPIC_NOT_FOUND") {
+            return $nsqdConns;
+        }
+
         foreach ($d["producers"] as $producer) {
             array_push($nsqdConns, $this->connectProducer($producer));
         }
