@@ -3,7 +3,7 @@
     "description": "PHP Client for nsq",
     "type": "library",
     "keywords": ["nsq", "queue"],
-    "homepage": "http://github.com/stackerzzq/phpnsq",
+    "homepage": "http://github.com/wk30/phpnsq",
     "require": {
         "monolog/monolog": "^1.25.0|^2.0",
         "symfony/console": "^v5.0",
@@ -22,7 +22,7 @@
     },
     "authors": [
         {
-            "name": "stackerzzq",
+            "name": "wk30",
             "email": "foo_stacker@yeah.net"
         }
     ],
